@@ -193,11 +193,12 @@
         "kind": {
           "type": "string",
           "title": "Adapter",
-          "description": "Which adapter probes this service.",
-          "enum": ["ollama", "comfyui", "omnivoice", "app-resources"]
+          "description": "Which adapter probes this service. `container` = no API to query; attribute a fixed estimate while its container runs (offload = stop container).",
+          "enum": ["ollama", "comfyui", "omnivoice", "app-resources", "container"]
         },
-        "url": { "type": "string", "title": "Base URL", "description": "In-network base URL, e.g. http://ollama:11434." },
-        "containerName": { "type": "string", "title": "Container", "description": "Backing container name (for context / control)." },
+        "url": { "type": "string", "title": "Base URL", "description": "In-network base URL, e.g. http://ollama:11434. Unused for `container` kind." },
+        "containerName": { "type": "string", "title": "Container", "description": "Backing container name (for context / control / `container`-kind attribution)." },
+        "vramEstimateMB": { "type": "number", "title": "VRAM estimate (MB)", "description": "For `container` kind: measured/expected resident VRAM while the container runs. Marked as an estimate in the workload." },
         "enabled": { "type": "boolean", "title": "Enabled", "description": "Probe this service?", "default": true },
         "order": { "type": "number", "title": "Order", "description": "Sort order." },
         "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }

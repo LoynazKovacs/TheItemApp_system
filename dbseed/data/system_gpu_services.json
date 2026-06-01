@@ -40,5 +40,35 @@
       { "$oid": "7000000000000000001d0001" },
       { "$oid": "7000000000000000001d0002" }
     ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000040004" },
+    "key": "km-embedder",
+    "name": "Knowledge (bge-m3 embedder)",
+    "kind": "container",
+    "url": "http://km-embedder:80",
+    "containerName": "knowledge-km-embedder-1",
+    "vramEstimateMB": 1900,
+    "enabled": true,
+    "order": 40,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000040005" },
+    "key": "km-reranker",
+    "name": "Knowledge (reranker)",
+    "kind": "container",
+    "url": "http://km-reranker:80",
+    "containerName": "knowledge-km-reranker-1",
+    "vramEstimateMB": 2600,
+    "enabled": true,
+    "order": 50,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
   }
 ]

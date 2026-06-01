@@ -107,8 +107,9 @@ export class Collector {
           kind: String(r.kind ?? 'app-resources') as GpuServiceConfig['kind'],
           url: String(r.url ?? '').replace(/\/$/, ''),
           containerName: String(r.containerName ?? ''),
+          vramEstimateMB: Number(r.vramEstimateMB ?? 0),
         }))
-        .filter((s) => s.url.length > 0);
+        .filter((s) => s.url.length > 0 || s.kind === 'container');
     } catch (err) {
       this.log.warn({ err: String(err) }, 'failed to load system_gpu_services catalog');
     }
@@ -117,17 +118,47 @@ export class Collector {
   private async collect(): Promise<void> {
     await this.loadServiceCatalog();
 
-    // Probe the (light) GPU services first, then nvidia-smi, then the heavy
+    // Probe the (light) HTTP GPU services first, then nvidia-smi, then the heavy
     // 67-container docker sampling — running them concurrently let docker stats
     // starve the event loop and time out the GPU probes (causing flapping rows).
-    const probes = await Promise.all(this.services.map((s) => probeService(s, this.config.probeTimeoutMs)));
+    const httpServices = this.services.filter((s) => s.kind !== 'container');
+    const containerServices = this.services.filter((s) => s.kind === 'container');
+    const probes = await Promise.all(httpServices.map((s) => probeService(s, this.config.probeTimeoutMs)));
     const gpu = await getGpuSample();
     const containers = await this.docker.sampleContainers().catch((err) => {
       this.log.warn({ err: String(err) }, 'docker sample failed');
       return [];
     });
 
-    const allWorkloads = probes.flatMap((p) => p.workloads);
+    // `container`-kind services have no API to query — attribute a configured
+    // estimate while their container is running (offload = stop the container).
+    const runningNames = new Set(containers.filter((c) => c.state === 'running').map((c) => c.name));
+    const containerProbes: ServiceProbe[] = containerServices.map((s) => {
+      const running = runningNames.has(s.containerName);
+      return {
+        serviceKey: s.key,
+        reachable: true,
+        workloads: running
+          ? [{
+              serviceKey: s.key,
+              serviceName: s.name,
+              workloadKey: 'resident',
+              label: `${s.name} (est.)`,
+              vramMB: s.vramEstimateMB ?? 0,
+              device: 'cuda',
+              status: 'loaded' as const,
+              idleSeconds: 0,
+              unloadable: false,
+              containerName: s.containerName,
+              note: 'Estimated VRAM — this engine exposes no live metric (WSL hides per-process GPU memory). Offload stops the container to reclaim it.',
+              reachable: true,
+            }]
+          : [],
+      };
+    });
+
+    const allProbes = [...probes, ...containerProbes];
+    const allWorkloads = allProbes.flatMap((p) => p.workloads);
 
     // Isolate each reconcile so a transient failure in one doesn't stall the others.
     await this.reconcileHost(gpu, containers.length, allWorkloads).catch((err) =>
@@ -136,7 +167,7 @@ export class Collector {
     await this.reconcileContainers(containers).catch((err) =>
       this.log.warn({ err: String(err) }, 'reconcileContainers failed'),
     );
-    await this.reconcileWorkloads(probes).catch((err) =>
+    await this.reconcileWorkloads(allProbes).catch((err) =>
       this.log.warn({ err: String(err) }, 'reconcileWorkloads failed'),
     );
     await this.reconcileVramBreakdown(gpu, allWorkloads).catch((err) =>

@@ -12,9 +12,11 @@
 export interface GpuServiceConfig {
   key: string;
   name: string;
-  kind: 'ollama' | 'comfyui' | 'omnivoice' | 'app-resources';
+  kind: 'ollama' | 'comfyui' | 'omnivoice' | 'app-resources' | 'container';
   url: string;
   containerName: string;
+  /** For `container` kind: estimated resident VRAM while the container runs. */
+  vramEstimateMB?: number;
 }
 
 export interface ProbedWorkload {
