@@ -1,0 +1,76 @@
+{
+  "version": 2,
+  "appKey": "system",
+  "appVersion": "1.0.0",
+  "engineRequires": ">=1.0.0",
+  "requiresCore": true,
+  "collections": [
+    {
+      "collection": "apps",
+      "file": "apps.json",
+      "matchBy": "key",
+      "installMode": "shared",
+      "exportFields": ["key", "name", "description", "icon", "enabled", "groupIds", "cantDelete"],
+      "filter": { "key": "system" }
+    },
+    {
+      "collection": "items",
+      "file": "items.json",
+      "matchBy": "key",
+      "installMode": "shared",
+      "exportFields": [
+        "key", "collection", "title", "titleSingular", "titlePlural", "description",
+        "ai", "icon", "appId", "behavior", "schema", "ui", "api", "auth", "tier", "kind", "meta"
+      ],
+      "filter": { "appId": "<thisAppId>" }
+    },
+    {
+      "collection": "dashboards",
+      "file": "dashboards.json",
+      "matchBy": "_id",
+      "installMode": "installConfig",
+      "exportFields": ["appId", "name", "icon", "isHome", "statusId", "interactive", "groupIds", "gridsterConfigId", "tiles"],
+      "filter": { "appId": "<thisAppId>" }
+    },
+    {
+      "collection": "windows",
+      "file": "windows.json",
+      "matchBy": "_id",
+      "installMode": "installConfig",
+      "exportFields": ["dashboardId", "title", "icon", "groupIds", "modelId", "prefabId", "prefabConfig", "sort"]
+    },
+    {
+      "collection": "actions",
+      "file": "actions.json",
+      "matchBy": "key",
+      "installMode": "shared",
+      "exportFields": [
+        "key", "modelId", "type", "kind", "label", "tooltip", "description", "icon",
+        "iconKey", "order", "color", "config", "inputSchema", "visibleWhen", "disabledWhen", "ui", "groupIds"
+      ],
+      "filter": { "appId": "<thisAppId>" }
+    },
+    {
+      "collection": "users",
+      "file": "users.json",
+      "matchBy": "_id",
+      "installMode": "shared",
+      "exportFields": ["username", "usernameLower", "isSystem", "groupIds", "isFunctional", "appId"]
+    },
+    {
+      "collection": "system_gpu_services",
+      "file": "data/system_gpu_services.json",
+      "matchBy": "key",
+      "installMode": "shared",
+      "exportFields": ["key", "name", "kind", "url", "containerName", "enabled", "order", "groupIds"]
+    }
+  ],
+  "routes": [
+    {
+      "type": "api-proxy",
+      "pathPrefix": "/system-api",
+      "upstream": "system-api:3009",
+      "readTimeout": "2m"
+    }
+  ]
+}

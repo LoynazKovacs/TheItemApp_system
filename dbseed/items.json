@@ -1,0 +1,214 @@
+[
+  {
+    "_id": { "$oid": "8b0000000000000000030001" },
+    "key": "system_host",
+    "collection": "system_host",
+    "title": "Host",
+    "titleSingular": "Host",
+    "titlePlural": "Host",
+    "description": "Singleton snapshot of the machine's resource totals — GPU (name, driver, VRAM total/used/free, utilisation), the VRAM attributed to known GPU services, and the live container count. Refreshed every poll cycle by the system-api collector from nvidia-smi + the Docker socket.",
+    "ai": {
+      "purpose": "Top-level gauge of the host: how much VRAM is used vs free, how much of it the monitor could attribute to a known GPU service, and how many containers are running.",
+      "howItWorks": "The system-api collector runs `nvidia-smi` for GPU totals and counts containers from the Docker socket, then upserts the single `kind: 'host'` row each cycle.",
+      "manipulation": "Read-only telemetry. Do not edit; the collector overwrites it every cycle. The 'Free idle GPU VRAM' row button triggers a batch soft-unload across all unloadable workloads.",
+      "outcomes": [],
+      "warnings": ["Per-container VRAM attribution is unavailable under WSL2; `vramAttributedMB` is the sum of what GPU-service adapters self-report and may be less than `vramUsedMB`."]
+    },
+    "icon": "lucide:server",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string", "title": "Kind", "description": "Discriminator; always `host` for the singleton row.", "x-ui": { "readonly": true } },
+        "name": { "type": "string", "title": "Host", "description": "Host label.", "x-ui": { "readonly": true } },
+        "gpuName": { "type": "string", "title": "GPU", "description": "GPU model name from nvidia-smi.", "x-ui": { "readonly": true } },
+        "gpuDriver": { "type": "string", "title": "Driver", "description": "NVIDIA driver version.", "x-ui": { "readonly": true } },
+        "gpuPresent": { "type": "boolean", "title": "GPU present", "description": "Whether nvidia-smi was reachable.", "x-ui": { "readonly": true } },
+        "vramTotalMB": { "type": "number", "title": "VRAM total (MB)", "description": "Total GPU memory.", "x-ui": { "readonly": true } },
+        "vramUsedMB": { "type": "number", "title": "VRAM used (MB)", "description": "GPU memory in use (authoritative, from nvidia-smi).", "x-ui": { "readonly": true } },
+        "vramFreeMB": { "type": "number", "title": "VRAM free (MB)", "description": "GPU memory free.", "x-ui": { "readonly": true } },
+        "vramAttributedMB": { "type": "number", "title": "VRAM attributed (MB)", "description": "Sum of VRAM reported by known GPU services. May be less than used (un-attributed allocations / WSL2 limits).", "x-ui": { "readonly": true } },
+        "gpuUtilizationPct": { "type": "number", "title": "GPU util %", "description": "GPU utilisation percent.", "x-ui": { "readonly": true } },
+        "containerCount": { "type": "number", "title": "Containers", "description": "Number of containers sampled.", "x-ui": { "readonly": true } },
+        "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp of the last collector cycle.", "x-ui": { "readonly": true } },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{gpuName}} — {{vramUsedMB}}/{{vramTotalMB}} MB"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000030002" },
+    "key": "system_containers",
+    "collection": "system_containers",
+    "title": "Containers",
+    "titleSingular": "Container",
+    "titlePlural": "Containers",
+    "description": "One row per Docker container on the host (running and stopped), with live CPU %, memory, writable-disk footprint, restart count, uptime, published ports, and compose stack/service. Synced from the Docker socket by the system-api collector. Row buttons stop / start / restart a container (admin-gated; core/self/mongo are protected).",
+    "ai": {
+      "purpose": "The full container inventory with per-container CPU/RAM/disk/state — the 'what is running and what is it costing me' view, GPU or not.",
+      "howItWorks": "The collector calls `docker stats` + `inspect` over the mounted socket each cycle and upserts one row per container keyed by name; rows for vanished containers are deleted.",
+      "manipulation": "Read-only telemetry. Use the Stop/Start/Restart row buttons to control a container — they POST to system-api which calls the Docker daemon.",
+      "outcomes": [
+        { "outcome": "Reclaim all VRAM from an idle GPU app", "how": "Stopping its container is the only guaranteed full reclaim — in-process model unloads leave the CUDA context resident." }
+      ],
+      "warnings": ["Stopping a container is disruptive; the collector refuses to stop core (backend/web/mongo) or itself."]
+    },
+    "icon": "lucide:box",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "title": "Name", "description": "Container name.", "x-ui": { "readonly": true } },
+        "containerId": { "type": "string", "title": "ID", "description": "Short container id.", "x-ui": { "readonly": true } },
+        "image": { "type": "string", "title": "Image", "description": "Container image.", "x-ui": { "readonly": true } },
+        "stack": { "type": "string", "title": "Stack", "description": "docker-compose project.", "x-ui": { "readonly": true } },
+        "service": { "type": "string", "title": "Service", "description": "docker-compose service.", "x-ui": { "readonly": true } },
+        "state": { "type": "string", "title": "State", "description": "running / exited / etc.", "x-ui": { "readonly": true } },
+        "statusText": { "type": "string", "title": "Status", "description": "Human status string.", "x-ui": { "readonly": true } },
+        "health": { "type": "string", "title": "Health", "description": "Healthcheck status.", "x-ui": { "readonly": true } },
+        "cpuPercent": { "type": "number", "title": "CPU %", "description": "CPU usage percent.", "x-ui": { "readonly": true } },
+        "memMB": { "type": "number", "title": "Mem (MB)", "description": "Memory usage in MB.", "x-ui": { "readonly": true } },
+        "memPercent": { "type": "number", "title": "Mem %", "description": "Memory percent of limit.", "x-ui": { "readonly": true } },
+        "diskMB": { "type": "number", "title": "Disk (MB)", "description": "Writable-layer size.", "x-ui": { "readonly": true } },
+        "restartCount": { "type": "number", "title": "Restarts", "description": "Restart count.", "x-ui": { "readonly": true } },
+        "uptimeSeconds": { "type": "number", "title": "Uptime (s)", "description": "Seconds since start.", "x-ui": { "readonly": true } },
+        "ports": { "type": "string", "title": "Ports", "description": "Published ports.", "x-ui": { "readonly": true } },
+        "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp of last sample.", "x-ui": { "readonly": true } },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{name}}"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000030003" },
+    "key": "system_gpu_workloads",
+    "collection": "system_gpu_workloads",
+    "title": "GPU Workloads",
+    "titleSingular": "GPU Workload",
+    "titlePlural": "GPU Workloads",
+    "description": "One row per GPU-consuming component (a loaded model / framework reservation) discovered by probing the GPU services in the catalog — e.g. an Ollama model, ComfyUI's torch reservation, an OmniVoice model. Carries estimated VRAM, device, load status, and whether it can be soft-unloaded. The 'Unload' row button frees it via the owning service.",
+    "ai": {
+      "purpose": "Per-app VRAM attribution — which model/framework is holding GPU memory right now and whether it can be released in-process.",
+      "howItWorks": "The collector probes each enabled `system_gpu_services` row via a per-kind adapter (ollama /api/ps, comfyui /system_stats, omnivoice /model/loaded, or the generic /app/resources contract) and upserts one workload row per reported component.",
+      "manipulation": "Read-only telemetry. Use the Unload row button to soft-free a workload through its service. Note that CUDA context memory often only fully returns when the container is stopped (see Containers).",
+      "outcomes": [],
+      "warnings": ["VRAM figures are self-reported by each framework and can be approximate."]
+    },
+    "icon": "lucide:cpu",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wkey", "serviceKey", "workloadKey"],
+      "properties": {
+        "wkey": { "type": "string", "title": "Key", "description": "Composite key serviceKey:workloadKey.", "x-ui": { "readonly": true } },
+        "serviceKey": { "type": "string", "title": "Service key", "description": "Owning service key.", "x-ui": { "readonly": true } },
+        "serviceName": { "type": "string", "title": "Service", "description": "Owning service name.", "x-ui": { "readonly": true } },
+        "workloadKey": { "type": "string", "title": "Workload key", "description": "Model/component id within the service.", "x-ui": { "readonly": true } },
+        "label": { "type": "string", "title": "Workload", "description": "Human label for the loaded component.", "x-ui": { "readonly": true } },
+        "vramMB": { "type": "number", "title": "VRAM (MB)", "description": "Estimated VRAM held, as reported by the service.", "x-ui": { "readonly": true } },
+        "device": { "type": "string", "title": "Device", "description": "cuda / cpu / etc.", "x-ui": { "readonly": true } },
+        "status": { "type": "string", "title": "Status", "description": "loaded / idle / unloaded / offline.", "x-ui": { "readonly": true } },
+        "idleSeconds": { "type": "number", "title": "Idle (s)", "description": "Seconds idle (if the service reports it).", "x-ui": { "readonly": true } },
+        "unloadable": { "type": "boolean", "title": "Unloadable", "description": "Whether soft-unload is supported.", "x-ui": { "readonly": true } },
+        "containerName": { "type": "string", "title": "Container", "description": "Container backing this service.", "x-ui": { "readonly": true } },
+        "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp of last probe.", "x-ui": { "readonly": true } },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{label}} — {{vramMB}} MB"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000030004" },
+    "key": "system_gpu_services",
+    "collection": "system_gpu_services",
+    "title": "GPU Services",
+    "titleSingular": "GPU Service",
+    "titlePlural": "GPU Services",
+    "description": "Catalog of GPU services the collector probes for VRAM attribution. This is configuration (input), not telemetry: add a row to monitor a new GPU service — pick its adapter `kind` (ollama / comfyui / omnivoice / app-resources), its base `url` on the theitemapp network, and the backing container name — and the collector picks it up on the next cycle with no code change.",
+    "ai": {
+      "purpose": "The seeded, user-editable list of GPU services to monitor. Generalises attribution: new GPU app = new row.",
+      "howItWorks": "The collector reads enabled rows each cycle and dispatches to the matching adapter by `kind`. `app-resources` is the first-party contract (`GET {url}/app/resources`); the others wrap third-party native endpoints.",
+      "manipulation": "Edit freely. Set `enabled` false to stop probing a service. `url` is the in-network base (e.g. http://ollama:11434).",
+      "outcomes": [
+        { "outcome": "Monitor a new GPU app", "how": "Create a row with its kind + url + container name." }
+      ],
+      "warnings": []
+    },
+    "icon": "lucide:plug",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "name", "kind", "url"],
+      "properties": {
+        "key": { "type": "string", "title": "Key", "description": "Stable unique key.", "minLength": 1 },
+        "name": { "type": "string", "title": "Name", "description": "Display name.", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "title": "Adapter",
+          "description": "Which adapter probes this service.",
+          "enum": ["ollama", "comfyui", "omnivoice", "app-resources"]
+        },
+        "url": { "type": "string", "title": "Base URL", "description": "In-network base URL, e.g. http://ollama:11434." },
+        "containerName": { "type": "string", "title": "Container", "description": "Backing container name (for context / control)." },
+        "enabled": { "type": "boolean", "title": "Enabled", "description": "Probe this service?", "default": true },
+        "order": { "type": "number", "title": "Order", "description": "Sort order." },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{name}} ({{kind}})"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
+  }
+]

@@ -1,0 +1,95 @@
+[
+  {
+    "_id": { "$oid": "8b0000000000000000070001" },
+    "key": "system.system_gpu_workloads.rowButton.unload",
+    "modelId": { "$oid": "8b0000000000000000030003" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Unload",
+    "tooltip": "Soft-unload this workload to free its VRAM (via the owning service)",
+    "icon": "lucide:eraser",
+    "order": 1,
+    "visibleWhen": { "field": "unloadable", "equals": true },
+    "config": {
+      "urlTemplate": "/system-api/api/control/gpu/unload/{{_id}}",
+      "bodyTemplate": "{}"
+    },
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000070002" },
+    "key": "system.system_host.rowButton.freeIdle",
+    "modelId": { "$oid": "8b0000000000000000030001" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Free idle GPU VRAM",
+    "tooltip": "Soft-unload every unloadable GPU workload to reclaim VRAM",
+    "icon": "lucide:zap",
+    "order": 1,
+    "config": {
+      "urlTemplate": "/system-api/api/control/free-idle",
+      "bodyTemplate": "{}",
+      "confirmMessage": "Unload all unloadable GPU workloads now? Apps will lazily reload their models on next use."
+    },
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000070003" },
+    "key": "system.system_containers.rowButton.stop",
+    "modelId": { "$oid": "8b0000000000000000030002" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Stop",
+    "tooltip": "Stop this container (frees all its VRAM/RAM)",
+    "icon": "lucide:square",
+    "order": 1,
+    "visibleWhen": { "field": "state", "equals": "running" },
+    "config": {
+      "urlTemplate": "/system-api/api/control/container/stop/{{_id}}",
+      "bodyTemplate": "{}",
+      "confirmMessage": "Stop {{name}}? Any work in flight will be interrupted."
+    },
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000070004" },
+    "key": "system.system_containers.rowButton.start",
+    "modelId": { "$oid": "8b0000000000000000030002" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Start",
+    "tooltip": "Start this container",
+    "icon": "lucide:play",
+    "order": 2,
+    "visibleWhen": { "field": "state", "notEquals": "running" },
+    "config": {
+      "urlTemplate": "/system-api/api/control/container/start/{{_id}}",
+      "bodyTemplate": "{}"
+    },
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000070005" },
+    "key": "system.system_containers.rowButton.restart",
+    "modelId": { "$oid": "8b0000000000000000030002" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Restart",
+    "tooltip": "Restart this container",
+    "icon": "lucide:rotate-cw",
+    "order": 3,
+    "visibleWhen": { "field": "state", "equals": "running" },
+    "config": {
+      "urlTemplate": "/system-api/api/control/container/restart/{{_id}}",
+      "bodyTemplate": "{}",
+      "confirmMessage": "Restart {{name}}?"
+    },
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }]
+  }
+]

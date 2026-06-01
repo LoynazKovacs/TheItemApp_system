@@ -1,0 +1,44 @@
+[
+  {
+    "_id": { "$oid": "8b0000000000000000040001" },
+    "key": "ollama",
+    "name": "Text Generator (Ollama)",
+    "kind": "ollama",
+    "url": "http://ollama:11434",
+    "containerName": "text-generator-ollama-1",
+    "enabled": true,
+    "order": 10,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000040002" },
+    "key": "comfyui",
+    "name": "Image Generator (ComfyUI)",
+    "kind": "comfyui",
+    "url": "http://comfyui:8188",
+    "containerName": "image-generator-comfyui-1",
+    "enabled": true,
+    "order": 20,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000040003" },
+    "key": "omnivoice",
+    "name": "Voice (OmniVoice)",
+    "kind": "omnivoice",
+    "url": "http://omnivoice:3900",
+    "containerName": "voice-omnivoice-1",
+    "enabled": true,
+    "order": 30,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
+  }
+]

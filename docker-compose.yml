@@ -1,0 +1,59 @@
+# System Monitor app — joins core's theitemapp network.
+# Usage: docker compose up -d --build
+#
+# One service:
+#   system-api — Fastify app-container. Samples the Docker socket + nvidia-smi,
+#                publishes system_* resource rows to core, and exposes reclaim
+#                controls (soft model unload, hard container stop/start/restart)
+#                under /system-api/api/control/*.
+#
+# The UI is built entirely from core's generic prefabs (list/pivot windows +
+# row-action buttons) seeded by this app, so there is no federated frontend
+# remote to build.
+
+services:
+  system-api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      SYSTEM_API_PORT: "3009"
+      SYSTEM_APP_KEY: "system"
+      SYSTEM_REGISTRATION_BASE_URL: "http://system-api:3009"
+      APP_REGISTRATION_KEY: "${APP_REGISTRATION_KEY:-}"
+      CORE_API_URL: "http://backend:3001"
+      SYSTEM_CORE_API_KEY: "${SYSTEM_CORE_API_KEY:-}"
+      SYSTEM_POLL_INTERVAL_MS: "${SYSTEM_POLL_INTERVAL_MS:-10000}"
+      SYSTEM_PROBE_TIMEOUT_MS: "${SYSTEM_PROBE_TIMEOUT_MS:-4000}"
+      SYSTEM_IDLE_REAPER_SECONDS: "${SYSTEM_IDLE_REAPER_SECONDS:-0}"
+      # nvidia-smi injection (total VRAM only — no compute reservation needed).
+      NVIDIA_VISIBLE_DEVICES: "all"
+      NVIDIA_DRIVER_CAPABILITIES: "utility"
+    ports:
+      - "${SYSTEM_API_PORT:-3009}:3009"
+    volumes:
+      # Read+control access to the host Docker daemon. The monitor needs write
+      # for stop/start/restart; destructive actions are admin-gated in-app and
+      # core/self/mongo containers are hard-blocked in routes.ts.
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3009/api/health', (r) => { r.resume(); process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    # GPU visibility for nvidia-smi. Remove this stanza on a host without an
+    # NVIDIA GPU / nvidia container runtime (the collector degrades to no GPU).
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  default:
+    name: theitemapp
+    external: true

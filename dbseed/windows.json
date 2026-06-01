@@ -1,0 +1,54 @@
+[
+  {
+    "_id": { "$oid": "8b0000000000000000020001" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "Host",
+    "icon": "lucide:server",
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ],
+    "modelId": { "$oid": "8b0000000000000000030001" },
+    "prefabId": { "$oid": "700000000000000000060001" },
+    "prefabConfig": { "collection": "system_host", "query": {}, "groupBy": [] }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020002" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "GPU Workloads",
+    "icon": "lucide:cpu",
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ],
+    "modelId": { "$oid": "8b0000000000000000030003" },
+    "prefabId": { "$oid": "700000000000000000060001" },
+    "prefabConfig": { "collection": "system_gpu_workloads", "query": {}, "groupBy": [] }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020003" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "Containers",
+    "icon": "lucide:box",
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ],
+    "modelId": { "$oid": "8b0000000000000000030002" },
+    "prefabId": { "$oid": "700000000000000000060001" },
+    "prefabConfig": { "collection": "system_containers", "query": {}, "groupBy": [] }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020004" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "GPU Services (catalog)",
+    "icon": "lucide:plug",
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ],
+    "modelId": { "$oid": "8b0000000000000000030004" },
+    "prefabId": { "$oid": "700000000000000000060001" },
+    "prefabConfig": { "collection": "system_gpu_services", "query": {}, "groupBy": [] }
+  }
+]

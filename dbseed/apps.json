@@ -1,0 +1,15 @@
+[
+  {
+    "_id": { "$oid": "8b0000000000000000000001" },
+    "key": "system",
+    "name": "System Monitor",
+    "description": "Platform-wide resource observability and control. A privileged app-container that samples the host's Docker socket and nvidia-smi to show every container's CPU / RAM / disk and every GPU service's VRAM in one place, with controls to reclaim resources on demand — soft-unload a model, free idle GPU VRAM, or stop/start/restart a container.",
+    "icon": "lucide:activity",
+    "enabled": true,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ],
+    "cantDelete": false
+  }
+]
