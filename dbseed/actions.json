@@ -5,10 +5,10 @@
     "modelId": { "$oid": "8b0000000000000000030003" },
     "type": "rowButton",
     "kind": "httpPostFromRow",
-    "label": "Unload",
-    "tooltip": "Soft-unload this workload to free its VRAM (via the owning service)",
+    "label": "Soft unload",
+    "tooltip": "Ask the service to drop the model. Frees VRAM for engines that support it (e.g. Ollama); ComfyUI / faster-whisper keep their CUDA context — use Offload for those.",
     "icon": "lucide:eraser",
-    "order": 1,
+    "order": 2,
     "visibleWhen": { "field": "unloadable", "equals": true },
     "config": {
       "urlTemplate": "/system-api/api/control/gpu/unload/{{_id}}",
@@ -18,6 +18,24 @@
       { "$oid": "7000000000000000001d0001" },
       { "$oid": "7000000000000000001d0002" }
     ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000070006" },
+    "key": "system.system_gpu_workloads.rowButton.offload",
+    "modelId": { "$oid": "8b0000000000000000030003" },
+    "type": "rowButton",
+    "kind": "httpPostFromRow",
+    "label": "Offload",
+    "tooltip": "Stop the owning container to fully reclaim its VRAM (the reliable offload). It restarts on demand.",
+    "icon": "lucide:power",
+    "order": 1,
+    "visibleWhen": { "field": "containerName", "notEquals": "" },
+    "config": {
+      "urlTemplate": "/system-api/api/control/workload/{{_id}}/offload",
+      "bodyTemplate": "{}",
+      "confirmMessage": "Offload by stopping {{containerName}}? Frees its VRAM now; it restarts on demand (e.g. your next dictation reloads Voice STT)."
+    },
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }]
   },
   {
     "_id": { "$oid": "8b0000000000000000070002" },

@@ -12,6 +12,20 @@ export interface RouteDeps {
   collector: Collector;
 }
 
+/**
+ * Never let the monitor take down core, the coding-agent executor, or itself —
+ * matched on container name alone so it works whether we have the compose
+ * stack (container route) or only a container name (workload offload).
+ */
+function isProtectedContainer(name: string): boolean {
+  return (
+    /^theitemapp-(backend|web|mongo)/.test(name) ||
+    name.includes('-mongo-') ||
+    name.includes('coding-agent-backend') ||
+    name.includes('system-system-api')
+  );
+}
+
 export function registerRoutes(app: FastifyInstance, deps: RouteDeps): void {
   const { config, coreApi, docker, collector } = deps;
   const requireAuth = makeRequireAuth(config.coreApiUrl);
@@ -60,19 +74,32 @@ export function registerRoutes(app: FastifyInstance, deps: RouteDeps): void {
     if (!row) return reply.code(404).send({ ok: false, error: 'container row not found' });
     const name = String(row.name ?? '');
     if (!name) return reply.code(400).send({ ok: false, error: 'container row missing name' });
-    // Guard rails: never let the monitor take down core, the coding-agent
-    // executor, or itself. Match on compose stack (the whole theitemapp core
-    // stack — backend/web/mongo — and this app's own stack) plus a denylist of
-    // critical container-name substrings.
-    const stack = String(row.stack ?? '');
-    const protectedStacks = new Set(['theitemapp', 'system']);
-    const protectedNameParts = ['coding-agent-backend', 'system-system-api', '-mongo-'];
-    if (protectedStacks.has(stack) || protectedNameParts.some((p) => name.includes(p))) {
+    if (isProtectedContainer(name)) {
       return reply.code(400).send({ ok: false, error: `refusing to ${action} protected container ${name}` });
     }
     try {
       await docker.controlContainer(name, action as 'stop' | 'start' | 'restart');
       return reply.send({ ok: true, action, name });
+    } catch (err) {
+      return reply.code(502).send({ ok: false, error: (err as Error).message });
+    }
+  });
+
+  // ── Offload a GPU workload by stopping its owning container ──────────────
+  // The reliable VRAM reclaim: soft model-unloads don't free CUDA contexts
+  // (ComfyUI, CTranslate2/faster-whisper), so "offload" stops the container.
+  app.post('/api/control/workload/:rowId/offload', { preHandler: requireAdmin }, async (req, reply) => {
+    const { rowId } = req.params as { rowId: string };
+    const row = await coreApi.get('system_gpu_workloads', rowId);
+    if (!row) return reply.code(404).send({ ok: false, error: 'workload not found' });
+    const name = String(row.containerName ?? '');
+    if (!name) return reply.code(400).send({ ok: false, error: 'workload has no container to stop' });
+    if (isProtectedContainer(name)) {
+      return reply.code(400).send({ ok: false, error: `refusing to stop protected container ${name}` });
+    }
+    try {
+      await docker.controlContainer(name, 'stop');
+      return reply.send({ ok: true, action: 'offload', name });
     } catch (err) {
       return reply.code(502).send({ ok: false, error: (err as Error).message });
     }

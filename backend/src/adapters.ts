@@ -158,10 +158,7 @@ async function probeComfy(cfg: GpuServiceConfig, t: number): Promise<ProbedWorkl
 async function probeOmnivoice(cfg: GpuServiceConfig, t: number): Promise<ProbedWorkload[]> {
   const data = await fetchJson(`${cfg.url}/model/loaded`, t);
   const models = Array.isArray(data?.models) ? data.models : [];
-  // Prefer the richer `/app/resources` contract if the voice-api in front of
-  // OmniVoice exposes it; fall back to the raw engine model list otherwise.
-  if (models.length === 0) return [];
-  return models.map((m: any): ProbedWorkload => ({
+  const out: ProbedWorkload[] = models.map((m: any): ProbedWorkload => ({
     serviceKey: cfg.key,
     serviceName: cfg.name,
     workloadKey: String(m.id ?? m.name ?? 'model'),
@@ -175,6 +172,31 @@ async function probeOmnivoice(cfg: GpuServiceConfig, t: number): Promise<ProbedW
     note: '',
     reachable: true,
   }));
+
+  // The capture ASR (push-to-talk dictation) is resident but not in
+  // /model/loaded — pull it from our sysmon patch if present.
+  try {
+    const asr = await fetchJson(`${cfg.url}/sysmon/asr`, t);
+    if (asr?.loaded) {
+      out.push({
+        serviceKey: cfg.key,
+        serviceName: cfg.name,
+        workloadKey: 'asr-capture',
+        label: `Voice STT (${asr.backend ?? 'whisper'} ${String(asr.model ?? '').split('/').pop()})`,
+        vramMB: Math.round(Number(asr.vram_mb ?? 0) * 10) / 10,
+        device: String(asr.device ?? ''),
+        status: 'loaded',
+        idleSeconds: 0,
+        unloadable: true,
+        containerName: cfg.containerName,
+        note: 'Speech-to-text engine, kept warm for dictation. Unload frees it; it reloads (~2-3s) on your next dictation.',
+        reachable: true,
+      });
+    }
+  } catch {
+    // sysmon patch not present (older omnivoice image) — skip silently.
+  }
+  return out;
 }
 
 async function probeAppResources(cfg: GpuServiceConfig, t: number): Promise<ProbedWorkload[]> {
@@ -221,9 +243,10 @@ export async function unloadWorkload(
         return { ok: true, detail: 'comfyui freed models + cache' };
       }
       case 'omnivoice': {
-        await fetchOk(`${cfg.url}/model/unload/${encodeURIComponent(workloadKey)}`, timeoutMs, {
-          method: 'POST',
-        });
+        const path = workloadKey === 'asr-capture'
+          ? '/sysmon/asr/unload'
+          : `/model/unload/${encodeURIComponent(workloadKey)}`;
+        await fetchOk(`${cfg.url}${path}`, timeoutMs, { method: 'POST' });
         return { ok: true, detail: `omnivoice unloaded ${workloadKey}` };
       }
       case 'app-resources': {
