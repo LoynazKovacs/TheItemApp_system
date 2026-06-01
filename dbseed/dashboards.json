@@ -18,18 +18,38 @@
         "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
       },
       {
+        "windowId": { "$oid": "8b0000000000000000020005" },
+        "x": 0, "y": 3, "cols": 12, "rows": 6,
+        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+      },
+      {
+        "windowId": { "$oid": "8b0000000000000000020006" },
+        "x": 12, "y": 3, "cols": 12, "rows": 6,
+        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+      },
+      {
         "windowId": { "$oid": "8b0000000000000000020002" },
-        "x": 0, "y": 3, "cols": 12, "rows": 10,
+        "x": 0, "y": 9, "cols": 14, "rows": 8,
+        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+      },
+      {
+        "windowId": { "$oid": "8b0000000000000000020008" },
+        "x": 14, "y": 9, "cols": 10, "rows": 8,
         "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
       },
       {
         "windowId": { "$oid": "8b0000000000000000020003" },
-        "x": 12, "y": 3, "cols": 12, "rows": 10,
+        "x": 0, "y": 17, "cols": 14, "rows": 9,
+        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+      },
+      {
+        "windowId": { "$oid": "8b0000000000000000020007" },
+        "x": 14, "y": 17, "cols": 10, "rows": 9,
         "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
       },
       {
         "windowId": { "$oid": "8b0000000000000000020004" },
-        "x": 0, "y": 13, "cols": 24, "rows": 4,
+        "x": 0, "y": 26, "cols": 24, "rows": 4,
         "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
       }
     ]

@@ -1,7 +1,7 @@
 {
   "version": 2,
   "appKey": "system",
-  "appVersion": "1.0.0",
+  "appVersion": "1.1.0",
   "engineRequires": ">=1.0.0",
   "requiresCore": true,
   "collections": [
@@ -38,6 +38,13 @@
       "matchBy": "_id",
       "installMode": "installConfig",
       "exportFields": ["dashboardId", "title", "icon", "groupIds", "modelId", "prefabId", "prefabConfig", "sort"]
+    },
+    {
+      "collection": "item_chart_views",
+      "file": "item_chart_views.json",
+      "matchBy": "_id",
+      "installMode": "installConfig",
+      "exportFields": ["modelId", "name", "data", "builder", "pinned", "isDefault", "order", "appId"]
     },
     {
       "collection": "actions",

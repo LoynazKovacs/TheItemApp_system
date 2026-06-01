@@ -11,6 +11,7 @@ const COL_HOST = 'system_host';
 const COL_CONTAINERS = 'system_containers';
 const COL_WORKLOADS = 'system_gpu_workloads';
 const COL_SERVICES = 'system_gpu_services';
+const COL_SAMPLES = 'system_gpu_samples';
 
 interface CollectorDeps {
   config: AppConfig;
@@ -25,8 +26,12 @@ export class Collector {
   private readonly docker: DockerClient;
   private readonly log: FastifyBaseLogger;
   private timer: NodeJS.Timeout | null = null;
+  private gpuTimer: NodeJS.Timeout | null = null;
   private running = false;
+  private gpuSampling = false;
   private services: GpuServiceConfig[] = [];
+  private hostRowId: string | null = null;
+  private lastAttributedMB = 0;
 
   constructor(deps: CollectorDeps) {
     this.config = deps.config;
@@ -57,11 +62,27 @@ export class Collector {
     };
     this.timer = setInterval(tick, this.config.pollIntervalMs);
     tick();
+
+    // Fast, lightweight GPU sampler — feeds the utilisation/VRAM time-series so
+    // short bursts (e.g. STT transcriptions) are visible between the heavier
+    // container-sampling cycles.
+    const gpuTick = () => {
+      if (!this.coreApi.hasApiKey() || this.gpuSampling) return;
+      this.gpuSampling = true;
+      this.sampleGpu()
+        .catch((err) => this.log.warn({ err: String(err) }, 'gpu sample failed'))
+        .finally(() => {
+          this.gpuSampling = false;
+        });
+    };
+    this.gpuTimer = setInterval(gpuTick, this.config.gpuSampleIntervalMs);
   }
 
   stop(): void {
     if (this.timer) clearInterval(this.timer);
+    if (this.gpuTimer) clearInterval(this.gpuTimer);
     this.timer = null;
+    this.gpuTimer = null;
   }
 
   /** Manual unload entry point used by the control routes. */
@@ -123,12 +144,27 @@ export class Collector {
     }
   }
 
+  private async ensureHostRow(): Promise<string> {
+    if (this.hostRowId) return this.hostRowId;
+    const rows = await this.coreApi.list(COL_HOST);
+    const existing = rows.find((r) => r.kind === 'host') ?? rows[0];
+    if (existing) {
+      this.hostRowId = existing._id;
+    } else {
+      const created = await this.coreApi.create(COL_HOST, { kind: 'host', name: 'localhost', groupIds: GROUPS });
+      this.hostRowId = created._id;
+    }
+    return this.hostRowId;
+  }
+
   private async reconcileHost(
     gpu: Awaited<ReturnType<typeof getGpuSample>>,
     containerCount: number,
     probed: ProbedWorkload[],
   ): Promise<void> {
     const attributedVram = Math.round(probed.reduce((sum, w) => sum + (w.vramMB || 0), 0) * 10) / 10;
+    this.lastAttributedMB = attributedVram;
+    const used = gpu?.vramUsedMB ?? 0;
     const desired: Record<string, unknown> = {
       kind: 'host',
       name: 'localhost',
@@ -136,21 +172,67 @@ export class Collector {
       gpuDriver: gpu?.driver ?? '',
       gpuPresent: Boolean(gpu),
       vramTotalMB: gpu?.vramTotalMB ?? 0,
-      vramUsedMB: gpu?.vramUsedMB ?? 0,
+      vramUsedMB: used,
       vramFreeMB: gpu?.vramFreeMB ?? 0,
       vramAttributedMB: attributedVram,
+      vramUnattributedMB: Math.max(0, Math.round((used - attributedVram) * 10) / 10),
       gpuUtilizationPct: gpu?.utilizationPct ?? 0,
+      memUtilizationPct: gpu?.memUtilizationPct ?? 0,
+      powerW: gpu?.powerW ?? 0,
+      tempC: gpu?.tempC ?? 0,
+      gpuProcCount: gpu?.procCount ?? 0,
       containerCount,
       sampledAt: new Date().toISOString(),
       groupIds: GROUPS,
     };
+    await this.coreApi.update(COL_HOST, await this.ensureHostRow(), desired);
+  }
 
-    const rows = await this.coreApi.list(COL_HOST);
-    const existing = rows.find((r) => r.kind === 'host') ?? rows[0];
-    if (existing) {
-      await this.coreApi.update(COL_HOST, existing._id, desired);
-    } else {
-      await this.coreApi.create(COL_HOST, desired);
+  /** Fast path: refresh host GPU fields and append a time-series sample. */
+  private async sampleGpu(): Promise<void> {
+    const gpu = await getGpuSample();
+    if (!gpu) return;
+    const now = new Date();
+    const unattributed = Math.max(0, Math.round((gpu.vramUsedMB - this.lastAttributedMB) * 10) / 10);
+
+    await this.coreApi.update(COL_HOST, await this.ensureHostRow(), {
+      gpuPresent: true,
+      gpuName: gpu.name,
+      gpuDriver: gpu.driver,
+      vramTotalMB: gpu.vramTotalMB,
+      vramUsedMB: gpu.vramUsedMB,
+      vramFreeMB: gpu.vramFreeMB,
+      vramUnattributedMB: unattributed,
+      gpuUtilizationPct: gpu.utilizationPct,
+      memUtilizationPct: gpu.memUtilizationPct,
+      powerW: gpu.powerW,
+      tempC: gpu.tempC,
+      gpuProcCount: gpu.procCount,
+      sampledAt: now.toISOString(),
+    });
+
+    await this.coreApi.create(COL_SAMPLES, {
+      ts: now.toISOString(),
+      tsMs: now.getTime(),
+      gpuUtilPct: gpu.utilizationPct,
+      memUtilPct: gpu.memUtilizationPct,
+      vramUsedMB: gpu.vramUsedMB,
+      vramFreeMB: gpu.vramFreeMB,
+      powerW: gpu.powerW,
+      tempC: gpu.tempC,
+      procCount: gpu.procCount,
+      groupIds: GROUPS,
+    });
+
+    // Prune to the rolling retention window (oldest first).
+    const samples = await this.coreApi.list(COL_SAMPLES, this.config.gpuSampleRetention + 60);
+    const excess = samples.length - this.config.gpuSampleRetention;
+    if (excess > 0) {
+      const oldest = samples
+        .slice()
+        .sort((a, b) => Number(a.tsMs ?? 0) - Number(b.tsMs ?? 0))
+        .slice(0, excess);
+      for (const r of oldest) await this.coreApi.remove(COL_SAMPLES, r._id);
     }
   }
 
@@ -218,6 +300,7 @@ export class Collector {
         idleSeconds: w.idleSeconds,
         unloadable: w.unloadable,
         containerName: w.containerName,
+        note: w.note,
         sampledAt: new Date().toISOString(),
         groupIds: GROUPS,
       };
@@ -257,7 +340,7 @@ function changed(existing: DynRow, desired: Record<string, unknown>): boolean {
   const fields = [
     'state', 'statusText', 'health', 'cpuPercent', 'memMB', 'memPercent', 'diskMB',
     'restartCount', 'uptimeSeconds', 'ports', 'image', 'stack', 'service',
-    'vramMB', 'device', 'status', 'idleSeconds', 'unloadable', 'label', 'serviceName',
+    'vramMB', 'device', 'status', 'idleSeconds', 'unloadable', 'label', 'serviceName', 'note',
   ];
   for (const f of fields) {
     if (f in desired && String(existing[f] ?? '') !== String(desired[f] ?? '')) return true;

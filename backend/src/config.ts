@@ -16,6 +16,10 @@ export interface AppConfig {
   adminGroupId: string;
   /** Auto-free GPU workloads idle longer than this (0 = disabled). */
   idleReaperSeconds: number;
+  /** Fast GPU time-series sampling interval (ms). */
+  gpuSampleIntervalMs: number;
+  /** How many GPU time-series samples to retain (rolling window). */
+  gpuSampleRetention: number;
 }
 
 function parseInt0(value: string | undefined, fallback: number): number {
@@ -40,5 +44,7 @@ export function getConfig(): AppConfig {
     probeTimeoutMs: parseInt0(process.env.SYSTEM_PROBE_TIMEOUT_MS, 4_000),
     adminGroupId: (process.env.SYSTEM_ADMIN_GROUP_ID ?? '').trim() || '7000000000000000001d0001',
     idleReaperSeconds: parseInt0(process.env.SYSTEM_IDLE_REAPER_SECONDS, 0),
+    gpuSampleIntervalMs: parseInt0(process.env.SYSTEM_GPU_SAMPLE_INTERVAL_MS, 5_000),
+    gpuSampleRetention: parseInt0(process.env.SYSTEM_GPU_SAMPLE_RETENTION, 180),
   };
 }

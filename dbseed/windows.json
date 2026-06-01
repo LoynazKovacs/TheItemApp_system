@@ -50,5 +50,45 @@
     "modelId": { "$oid": "8b0000000000000000030004" },
     "prefabId": { "$oid": "700000000000000000060001" },
     "prefabConfig": { "collection": "system_gpu_services", "query": {}, "groupBy": [] }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020005" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "GPU utilisation over time",
+    "icon": "lucide:activity",
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
+    "modelId": { "$oid": "8b0000000000000000030005" },
+    "prefabId": { "$oid": "700000000000000000060008" },
+    "prefabConfig": { "collection": "system_gpu_samples", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110001" }, "filterBar": { "showActiveFiltersTop": false } } }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020006" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "VRAM used over time",
+    "icon": "lucide:database",
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
+    "modelId": { "$oid": "8b0000000000000000030005" },
+    "prefabId": { "$oid": "700000000000000000060008" },
+    "prefabConfig": { "collection": "system_gpu_samples", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110002" }, "filterBar": { "showActiveFiltersTop": false } } }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020007" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "Container RAM by stack",
+    "icon": "lucide:chart-column",
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
+    "modelId": { "$oid": "8b0000000000000000030002" },
+    "prefabId": { "$oid": "700000000000000000060008" },
+    "prefabConfig": { "collection": "system_containers", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110003" }, "filterBar": { "showActiveFiltersTop": false } } }
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000020008" },
+    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "title": "GPU VRAM by service",
+    "icon": "lucide:chart-pie",
+    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
+    "modelId": { "$oid": "8b0000000000000000030003" },
+    "prefabId": { "$oid": "700000000000000000060008" },
+    "prefabConfig": { "collection": "system_gpu_workloads", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110004" }, "filterBar": { "showActiveFiltersTop": false } } }
   }
 ]

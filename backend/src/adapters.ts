@@ -29,6 +29,8 @@ export interface ProbedWorkload {
   idleSeconds: number;
   unloadable: boolean;
   containerName: string;
+  /** Human note about reclaim behaviour (e.g. soft-unload won't free CUDA ctx). */
+  note: string;
   /** Whether the service itself was reachable on this probe. */
   reachable: boolean;
 }
@@ -118,6 +120,7 @@ async function probeOllama(cfg: GpuServiceConfig, t: number): Promise<ProbedWork
       idleSeconds: 0,
       unloadable: true,
       containerName: cfg.containerName,
+      note: '',
       reachable: true,
     };
   });
@@ -146,6 +149,7 @@ async function probeComfy(cfg: GpuServiceConfig, t: number): Promise<ProbedWorkl
       idleSeconds: 0,
       unloadable: true,
       containerName: cfg.containerName,
+      note: 'Reports only its torch reservation; the CUDA context (often several GB) survives /free. Stop the container for a full VRAM reclaim.',
       reachable: true,
     },
   ];
@@ -168,6 +172,7 @@ async function probeOmnivoice(cfg: GpuServiceConfig, t: number): Promise<ProbedW
     idleSeconds: 0,
     unloadable: Boolean(m.unloadable),
     containerName: cfg.containerName,
+    note: '',
     reachable: true,
   }));
 }
@@ -186,6 +191,7 @@ async function probeAppResources(cfg: GpuServiceConfig, t: number): Promise<Prob
     idleSeconds: Number(w.idleSeconds ?? 0),
     unloadable: Boolean(w.unloadable),
     containerName: cfg.containerName,
+    note: String(w.note ?? ''),
     reachable: true,
   }));
 }

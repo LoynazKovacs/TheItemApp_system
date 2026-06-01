@@ -30,7 +30,12 @@
         "vramUsedMB": { "type": "number", "title": "VRAM used (MB)", "description": "GPU memory in use (authoritative, from nvidia-smi).", "x-ui": { "readonly": true } },
         "vramFreeMB": { "type": "number", "title": "VRAM free (MB)", "description": "GPU memory free.", "x-ui": { "readonly": true } },
         "vramAttributedMB": { "type": "number", "title": "VRAM attributed (MB)", "description": "Sum of VRAM reported by known GPU services. May be less than used (un-attributed allocations / WSL2 limits).", "x-ui": { "readonly": true } },
-        "gpuUtilizationPct": { "type": "number", "title": "GPU util %", "description": "GPU utilisation percent.", "x-ui": { "readonly": true } },
+        "vramUnattributedMB": { "type": "number", "title": "VRAM unattributed (MB)", "description": "VRAM used that no GPU service self-reports — typically CUDA contexts that frameworks (e.g. ComfyUI) hold but don't admit to via their APIs. Only a container Stop reclaims it.", "x-ui": { "readonly": true } },
+        "gpuUtilizationPct": { "type": "number", "title": "GPU util %", "description": "GPU compute utilisation percent.", "x-ui": { "readonly": true } },
+        "memUtilizationPct": { "type": "number", "title": "VRAM bus %", "description": "GPU memory-controller utilisation percent.", "x-ui": { "readonly": true } },
+        "powerW": { "type": "number", "title": "Power (W)", "description": "Current board power draw.", "x-ui": { "readonly": true } },
+        "tempC": { "type": "number", "title": "Temp (°C)", "description": "GPU temperature.", "x-ui": { "readonly": true } },
+        "gpuProcCount": { "type": "number", "title": "GPU procs", "description": "Number of compute contexts on the GPU (nvidia-smi compute-apps count; names/memory are N/A under WSL2).", "x-ui": { "readonly": true } },
         "containerCount": { "type": "number", "title": "Containers", "description": "Number of containers sampled.", "x-ui": { "readonly": true } },
         "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp of the last collector cycle.", "x-ui": { "readonly": true } },
         "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
@@ -139,6 +144,7 @@
         "status": { "type": "string", "title": "Status", "description": "loaded / idle / unloaded / offline.", "x-ui": { "readonly": true } },
         "idleSeconds": { "type": "number", "title": "Idle (s)", "description": "Seconds idle (if the service reports it).", "x-ui": { "readonly": true } },
         "unloadable": { "type": "boolean", "title": "Unloadable", "description": "Whether soft-unload is supported.", "x-ui": { "readonly": true } },
+        "note": { "type": "string", "title": "Note", "description": "Reclaim guidance — e.g. why a soft unload may not free VRAM and a container Stop is needed instead.", "x-ui": { "readonly": true } },
         "containerName": { "type": "string", "title": "Container", "description": "Container backing this service.", "x-ui": { "readonly": true } },
         "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp of last probe.", "x-ui": { "readonly": true } },
         "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
@@ -199,6 +205,54 @@
     },
     "ui": {
       "display": { "templates": ["{{name}} ({{kind}})"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000030005" },
+    "key": "system_gpu_samples",
+    "collection": "system_gpu_samples",
+    "title": "GPU Samples",
+    "titleSingular": "GPU Sample",
+    "titlePlural": "GPU Samples",
+    "description": "Rolling time-series of GPU utilisation, VRAM, power and temperature, sampled every few seconds by the collector. Backs the over-time charts so short GPU bursts (e.g. STT transcriptions) are visible. Pruned to a fixed rolling window.",
+    "ai": {
+      "purpose": "Time-series telemetry for the GPU activity charts — lets you see when and how hard the GPU is working over time.",
+      "howItWorks": "A fast collector loop appends one row per sample (default every 5s) and prunes to the retention window (default 180 samples).",
+      "manipulation": "Read-only. Charts aggregate it by timestamp.",
+      "outcomes": [],
+      "warnings": ["High-churn collection: rows are continuously created and pruned."]
+    },
+    "icon": "lucide:activity",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tsMs"],
+      "properties": {
+        "ts": { "type": "string", "title": "Time", "description": "ISO timestamp of the sample.", "x-ui": { "readonly": true } },
+        "tsMs": { "type": "number", "title": "Time (ms)", "description": "Epoch millis — chart x-axis / sort key.", "x-ui": { "readonly": true } },
+        "gpuUtilPct": { "type": "number", "title": "GPU util %", "description": "Compute utilisation at sample time.", "x-ui": { "readonly": true } },
+        "memUtilPct": { "type": "number", "title": "VRAM bus %", "description": "Memory-controller utilisation.", "x-ui": { "readonly": true } },
+        "vramUsedMB": { "type": "number", "title": "VRAM used (MB)", "description": "VRAM in use at sample time.", "x-ui": { "readonly": true } },
+        "vramFreeMB": { "type": "number", "title": "VRAM free (MB)", "description": "VRAM free at sample time.", "x-ui": { "readonly": true } },
+        "powerW": { "type": "number", "title": "Power (W)", "description": "Board power draw.", "x-ui": { "readonly": true } },
+        "tempC": { "type": "number", "title": "Temp (°C)", "description": "GPU temperature.", "x-ui": { "readonly": true } },
+        "procCount": { "type": "number", "title": "GPU procs", "description": "Compute contexts on the GPU.", "x-ui": { "readonly": true } },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{ts}} — {{gpuUtilPct}}%"] },
       "prefabs": { "list": "list", "edit": "edit", "show": "show" }
     },
     "api": { "crud": true, "realtime": true },
