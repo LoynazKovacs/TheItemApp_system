@@ -12,6 +12,7 @@ const COL_CONTAINERS = 'system_containers';
 const COL_WORKLOADS = 'system_gpu_workloads';
 const COL_SERVICES = 'system_gpu_services';
 const COL_SAMPLES = 'system_gpu_samples';
+const COL_BREAKDOWN = 'system_vram_breakdown';
 
 interface CollectorDeps {
   config: AppConfig;
@@ -137,6 +138,9 @@ export class Collector {
     );
     await this.reconcileWorkloads(probes).catch((err) =>
       this.log.warn({ err: String(err) }, 'reconcileWorkloads failed'),
+    );
+    await this.reconcileVramBreakdown(gpu, allWorkloads).catch((err) =>
+      this.log.warn({ err: String(err) }, 'reconcileVramBreakdown failed'),
     );
 
     if (this.config.idleReaperSeconds > 0) {
@@ -321,6 +325,50 @@ export class Collector {
         // Service unreachable this cycle → mark its rows offline, don't churn them.
         await this.coreApi.update(COL_WORKLOADS, r._id, { status: 'offline', vramMB: 0, sampledAt: new Date().toISOString() });
       }
+    }
+  }
+
+  private async reconcileVramBreakdown(
+    gpu: Awaited<ReturnType<typeof getGpuSample>>,
+    workloads: ProbedWorkload[],
+  ): Promise<void> {
+    if (!gpu) return;
+    const perService = new Map<string, number>();
+    for (const w of workloads) {
+      if (w.vramMB > 0) perService.set(w.serviceName, (perService.get(w.serviceName) ?? 0) + w.vramMB);
+    }
+    const attributed = [...perService.values()].reduce((a, b) => a + b, 0);
+    const unattributed = Math.max(0, Math.round((gpu.vramUsedMB - attributed) * 10) / 10);
+
+    const desired: Array<{ label: string; vramMB: number; kind: string; order: number }> = [];
+    let order = 10;
+    for (const [name, mb] of perService) {
+      desired.push({ label: name, vramMB: Math.round(mb * 10) / 10, kind: 'service', order: order++ });
+    }
+    desired.push({ label: 'Unattributed', vramMB: unattributed, kind: 'unattributed', order: 90 });
+    desired.push({ label: 'Free', vramMB: gpu.vramFreeMB, kind: 'free', order: 100 });
+
+    const rows = await this.coreApi.list(COL_BREAKDOWN);
+    const byLabel = new Map(rows.map((r) => [String(r.label), r]));
+    const seen = new Set<string>();
+    for (const d of desired) {
+      seen.add(d.label);
+      const existing = byLabel.get(d.label);
+      const row = { ...d, sampledAt: new Date().toISOString(), groupIds: GROUPS };
+      if (existing) {
+        if (
+          String(existing.vramMB) !== String(d.vramMB) ||
+          String(existing.kind) !== String(d.kind) ||
+          String(existing.order) !== String(d.order)
+        ) {
+          await this.coreApi.update(COL_BREAKDOWN, existing._id, row);
+        }
+      } else {
+        await this.coreApi.create(COL_BREAKDOWN, row);
+      }
+    }
+    for (const r of rows) {
+      if (!seen.has(String(r.label))) await this.coreApi.remove(COL_BREAKDOWN, r._id);
     }
   }
 

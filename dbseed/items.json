@@ -264,5 +264,49 @@
     },
     "tier": 3,
     "kind": "data"
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000030006" },
+    "key": "system_vram_breakdown",
+    "collection": "system_vram_breakdown",
+    "title": "VRAM Breakdown",
+    "titleSingular": "VRAM Slice",
+    "titlePlural": "VRAM Breakdown",
+    "description": "A whole-of-VRAM breakdown that always sums to total GPU memory: one slice per GPU service (its self-reported VRAM), an `unattributed` slice (used VRAM no service admits to — e.g. CUDA contexts), and a `free` slice. Backs the VRAM pie chart so the slices add up to the card's full capacity.",
+    "ai": {
+      "purpose": "Pie-ready VRAM split where service + unattributed + free = total VRAM.",
+      "howItWorks": "The collector recomputes it each cycle from nvidia-smi totals and the per-service adapter VRAM: free = vramFree, unattributed = max(0, used − sum(attributed)), and one row per reporting service.",
+      "manipulation": "Read-only telemetry; overwritten each cycle.",
+      "outcomes": [],
+      "warnings": ["Per-service figures are self-reported and often understate real usage; the difference lands in `unattributed`."]
+    },
+    "icon": "lucide:chart-pie",
+    "appId": { "$oid": "8b0000000000000000000001" },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "title": "Slice", "description": "Service name, or Free / Unattributed.", "x-ui": { "readonly": true } },
+        "vramMB": { "type": "number", "title": "VRAM (MB)", "description": "Megabytes of VRAM in this slice.", "x-ui": { "readonly": true } },
+        "kind": { "type": "string", "title": "Kind", "description": "service | unattributed | free.", "x-ui": { "readonly": true } },
+        "order": { "type": "number", "title": "Order", "description": "Sort order.", "x-ui": { "readonly": true } },
+        "sampledAt": { "type": "string", "title": "Sampled", "description": "ISO timestamp.", "x-ui": { "readonly": true } },
+        "groupIds": { "type": "array", "title": "Groups", "description": "Row-security scope.", "items": { "type": "string", "x-ref": "groups" } }
+      }
+    },
+    "ui": {
+      "display": { "templates": ["{{label}} — {{vramMB}} MB"] },
+      "prefabs": { "list": "list", "edit": "edit", "show": "show" }
+    },
+    "api": { "crud": true, "realtime": true },
+    "auth": {
+      "read": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "create": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "edit": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] },
+      "delete": { "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }] }
+    },
+    "tier": 3,
+    "kind": "data"
   }
 ]

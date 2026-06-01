@@ -8,7 +8,7 @@
       "version": 1,
       "data": { "kind": "aggregate", "query": [], "sort": "ts", "limit": 500, "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "gpuUtilPct", "as": "gpuUtilPct" }] } },
       "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "line", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["gpuUtilPct"] },
+      "chart": { "type": "area", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["gpuUtilPct"] },
       "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
     },
     "pinned": true, "isDefault": true, "order": 10,
@@ -23,7 +23,7 @@
       "version": 1,
       "data": { "kind": "aggregate", "query": [], "sort": "ts", "limit": 500, "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "vramUsedMB", "as": "vramUsedMB" }] } },
       "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "line", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["vramUsedMB"] },
+      "chart": { "type": "area", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["vramUsedMB"] },
       "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
     },
     "pinned": true, "isDefault": true, "order": 20,
@@ -46,14 +46,14 @@
   },
   {
     "_id": { "$oid": "8b0000000000000000110004" },
-    "modelId": { "$oid": "8b0000000000000000030003" },
-    "name": "GPU VRAM by service (MB)",
-    "data": { "kind": "aggregate", "aggregation": { "rows": ["serviceName"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
+    "modelId": { "$oid": "8b0000000000000000030006" },
+    "name": "VRAM breakdown (of total)",
+    "data": { "kind": "aggregate", "aggregation": { "rows": ["label"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
     "builder": {
       "version": 1,
-      "data": { "kind": "aggregate", "query": [], "sort": "", "limit": 200, "aggregation": { "rows": ["serviceName"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
+      "data": { "kind": "aggregate", "query": [], "sort": "", "limit": 200, "aggregation": { "rows": ["label"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
       "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "bar", "showLegend": false, "showTooltip": true, "stack": false, "smooth": false, "rotateXLabels": true, "enableZoom": false, "xKey": "serviceName", "yKeys": ["vramMB"] },
+      "chart": { "type": "pie", "showLegend": true, "showTooltip": true, "stack": false, "smooth": false, "rotateXLabels": false, "enableZoom": false, "xKey": "label", "yKeys": ["vramMB"] },
       "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
     },
     "pinned": true, "isDefault": true, "order": 40,
