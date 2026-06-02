@@ -70,5 +70,19 @@
       { "$oid": "7000000000000000001d0001" },
       { "$oid": "7000000000000000001d0002" }
     ]
+  },
+  {
+    "_id": { "$oid": "8b0000000000000000040006" },
+    "key": "music-engine",
+    "name": "Music (HeartMuLa)",
+    "kind": "app-resources",
+    "url": "http://music-engine:8600",
+    "containerName": "music-music-engine-1",
+    "enabled": true,
+    "order": 60,
+    "groupIds": [
+      { "$oid": "7000000000000000001d0001" },
+      { "$oid": "7000000000000000001d0002" }
+    ]
   }
 ]
