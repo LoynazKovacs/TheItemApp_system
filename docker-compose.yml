@@ -16,6 +16,13 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    # Run as the unprivileged 'node' user (present in the node base image) and
+    # reach the docker socket via the docker group (gid 1001) instead of root.
+    # The daemon enforces destructive-action gating in routes.ts; this removes
+    # container-as-root from a service that holds the host socket.
+    user: "node"
+    group_add:
+      - "1001"
     environment:
       SYSTEM_API_PORT: "3009"
       SYSTEM_APP_KEY: "system"
@@ -29,8 +36,7 @@ services:
       # nvidia-smi injection (total VRAM only — no compute reservation needed).
       NVIDIA_VISIBLE_DEVICES: "all"
       NVIDIA_DRIVER_CAPABILITIES: "utility"
-    ports:
-      - "${SYSTEM_API_PORT:-3009}:3009"
+    # No host port: reached only in-network via core Caddy (/system-api/*).
     volumes:
       # Read+control access to the host Docker daemon. The monitor needs write
       # for stop/start/restart; destructive actions are admin-gated in-app and
