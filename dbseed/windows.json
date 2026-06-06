@@ -1,94 +1,519 @@
 [
   {
-    "_id": { "$oid": "8b0000000000000000020001" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
-    "title": "Host",
-    "icon": "lucide:server",
+    "_id": {
+      "$oid": "6a2471e9644b16df299dfb24"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "Resource headline",
+    "icon": "lucide:gauge",
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ],
-    "modelId": { "$oid": "8b0000000000000000030001" },
-    "prefabId": { "$oid": "700000000000000000060001" },
-    "prefabConfig": { "collection": "system_host", "query": {}, "groupBy": [] }
+    "modelId": {
+      "$oid": "8b0000000000000000030001"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060019"
+    },
+    "prefabConfig": {
+      "collection": "system_host",
+      "ui": {
+        "kpi": {
+          "columns": 6,
+          "metrics": [
+            {
+              "label": "Containers",
+              "icon": "lucide:box",
+              "op": "count",
+              "collection": "system_containers",
+              "color": "#2563eb"
+            },
+            {
+              "label": "Running",
+              "icon": "lucide:play",
+              "op": "count",
+              "collection": "system_containers",
+              "query": {
+                "state": "running"
+              },
+              "color": "#16a34a"
+            },
+            {
+              "label": "GPU Services",
+              "icon": "lucide:plug",
+              "op": "count",
+              "collection": "system_gpu_services",
+              "color": "#7c3aed"
+            },
+            {
+              "label": "Loaded models",
+              "icon": "lucide:cpu",
+              "op": "count",
+              "collection": "system_gpu_workloads",
+              "query": {
+                "status": "loaded"
+              },
+              "color": "#d97706"
+            },
+            {
+              "label": "VRAM used",
+              "icon": "lucide:database",
+              "op": "sum",
+              "field": "vramUsedMB",
+              "collection": "system_host",
+              "suffix": " MB",
+              "format": "compact",
+              "color": "#dc2626"
+            },
+            {
+              "label": "Total VRAM",
+              "icon": "lucide:chart-pie",
+              "op": "sum",
+              "field": "vramMB",
+              "collection": "system_vram_breakdown",
+              "suffix": " MB",
+              "format": "compact",
+              "color": "#0891b2"
+            }
+          ]
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020002" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "6a2471e9644b16df299dfd42"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "Filters",
+    "icon": "lucide:filter",
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060015"
+    },
+    "prefabConfig": {
+      "collection": "system_containers"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471e9644b16df299dfd5b"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "Containers by state",
+    "icon": "lucide:chart-pie",
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_containers",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "6a2471d0644b16df299deea1"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471eb644b16df299dfd6d"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "Container RAM: stack × state",
+    "icon": "lucide:table-2",
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060007"
+    },
+    "prefabConfig": {
+      "collection": "system_containers",
+      "aggregation": {
+        "rows": [
+          "stack"
+        ],
+        "columns": [
+          "state"
+        ],
+        "values": [
+          {
+            "op": "sum",
+            "field": "memMB",
+            "as": "memMB"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471ed644b16df299dfd99"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "VRAM breakdown (bar)",
+    "icon": "lucide:chart-column",
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030006"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_vram_breakdown",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "6a2471d3644b16df299deec3"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000020001"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "Host summary",
+    "icon": "lucide:server",
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030001"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060003"
+    },
+    "prefabConfig": {
+      "collection": "system_host",
+      "id": {
+        "$oid": "6a1df55d771853cf2fb312d1"
+      }
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000020002"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "GPU Workloads",
     "icon": "lucide:cpu",
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ],
-    "modelId": { "$oid": "8b0000000000000000030003" },
-    "prefabId": { "$oid": "700000000000000000060001" },
-    "prefabConfig": { "collection": "system_gpu_workloads", "query": {}, "groupBy": [] }
+    "modelId": {
+      "$oid": "8b0000000000000000030003"
+    },
+    "prefabId": {
+      "$oid": "70000000000000000006000b"
+    },
+    "prefabConfig": {
+      "collection": "system_gpu_workloads",
+      "ui": {
+        "tree": {
+          "viewId": {
+            "$oid": "6a2471c3644b16df299de98d"
+          }
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020003" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "8b0000000000000000020003"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "Containers",
     "icon": "lucide:box",
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ],
-    "modelId": { "$oid": "8b0000000000000000030002" },
-    "prefabId": { "$oid": "700000000000000000060001" },
-    "prefabConfig": { "collection": "system_containers", "query": {}, "groupBy": [] }
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "prefabId": {
+      "$oid": "70000000000000000006000b"
+    },
+    "prefabConfig": {
+      "collection": "system_containers",
+      "ui": {
+        "tree": {
+          "viewId": {
+            "$oid": "6a2471be644b16df299de492"
+          }
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020004" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
-    "title": "GPU Services (catalog)",
+    "_id": {
+      "$oid": "8b0000000000000000020004"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "title": "GPU Services",
     "icon": "lucide:plug",
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ],
-    "modelId": { "$oid": "8b0000000000000000030004" },
-    "prefabId": { "$oid": "700000000000000000060001" },
-    "prefabConfig": { "collection": "system_gpu_services", "query": {}, "groupBy": [] }
+    "modelId": {
+      "$oid": "8b0000000000000000030004"
+    },
+    "prefabId": {
+      "$oid": "70000000000000000006000b"
+    },
+    "prefabConfig": {
+      "collection": "system_gpu_services",
+      "ui": {
+        "tree": {
+          "viewId": {
+            "$oid": "6a2471c1644b16df299de4c4"
+          }
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020005" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "8b0000000000000000020005"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "GPU utilisation over time",
     "icon": "lucide:activity",
-    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
-    "modelId": { "$oid": "8b0000000000000000030005" },
-    "prefabId": { "$oid": "700000000000000000060008" },
-    "prefabConfig": { "collection": "system_gpu_samples", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110001" }, "filterBar": { "showActiveFiltersTop": false } } }
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030005"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_gpu_samples",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "8b0000000000000000110001"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020006" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "8b0000000000000000020006"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "VRAM used over time",
     "icon": "lucide:database",
-    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
-    "modelId": { "$oid": "8b0000000000000000030005" },
-    "prefabId": { "$oid": "700000000000000000060008" },
-    "prefabConfig": { "collection": "system_gpu_samples", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110002" }, "filterBar": { "showActiveFiltersTop": false } } }
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030005"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_gpu_samples",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "8b0000000000000000110002"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020007" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "8b0000000000000000020007"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "Container RAM by stack",
     "icon": "lucide:chart-column",
-    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
-    "modelId": { "$oid": "8b0000000000000000030002" },
-    "prefabId": { "$oid": "700000000000000000060008" },
-    "prefabConfig": { "collection": "system_containers", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110003" }, "filterBar": { "showActiveFiltersTop": false } } }
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_containers",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "8b0000000000000000110003"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000020008" },
-    "dashboardId": { "$oid": "8b0000000000000000010001" },
+    "_id": {
+      "$oid": "8b0000000000000000020008"
+    },
+    "dashboardId": {
+      "$oid": "8b0000000000000000010001"
+    },
     "title": "VRAM breakdown (of total)",
     "icon": "lucide:chart-pie",
-    "groupIds": [{ "$oid": "7000000000000000001d0001" }, { "$oid": "7000000000000000001d0002" }],
-    "modelId": { "$oid": "8b0000000000000000030006" },
-    "prefabId": { "$oid": "700000000000000000060008" },
-    "prefabConfig": { "collection": "system_vram_breakdown", "query": {}, "ui": { "chart": { "viewId": "8b0000000000000000110004" }, "filterBar": { "showActiveFiltersTop": false } } }
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "modelId": {
+      "$oid": "8b0000000000000000030006"
+    },
+    "prefabId": {
+      "$oid": "700000000000000000060008"
+    },
+    "prefabConfig": {
+      "collection": "system_vram_breakdown",
+      "query": {},
+      "ui": {
+        "chart": {
+          "viewId": {
+            "$oid": "8b0000000000000000110004"
+          }
+        },
+        "filterBar": {
+          "showActiveFiltersTop": false
+        }
+      }
+    }
   }
 ]

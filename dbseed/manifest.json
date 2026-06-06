@@ -47,6 +47,26 @@
       "exportFields": ["modelId", "name", "data", "builder", "pinned", "isDefault", "order", "appId"]
     },
     {
+      "collection": "item_tree_views",
+      "file": "item_tree_views.json",
+      "matchBy": "_id",
+      "installMode": "installConfig",
+      "exportFields": [
+        "modelId", "name", "groupBy", "rowDensity",
+        "showAvatar", "avatarField", "avatarShape",
+        "showTitle", "titleField", "titleWeight",
+        "showBadge", "badgeField", "showIcon",
+        "showSubtitle", "subtitleField", "subtitleLines",
+        "showContent", "contentField", "contentLines",
+        "showRightTop", "rightTopField", "rightTopFormat", "rightTopActionKeys", "rightTopShowLabel",
+        "showRightMiddle", "rightMiddleField", "rightMiddleKind", "rightMiddleActionKeys", "rightMiddleShowLabel",
+        "showRightBottom", "rightBottomField", "rightBottomKind", "rightBottomActionKeys", "rightBottomShowLabel",
+        "sortFields", "sortField", "sortDir", "leafLimit", "allowCreate", "clickActionKey",
+        "isDefault", "pinned", "order", "appId"
+      ],
+      "filter": { "appId": "<thisAppId>" }
+    },
+    {
       "collection": "actions",
       "file": "actions.json",
       "matchBy": "key",

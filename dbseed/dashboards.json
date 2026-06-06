@@ -1,56 +1,145 @@
 [
   {
-    "_id": { "$oid": "8b0000000000000000010001" },
-    "appId": { "$oid": "8b0000000000000000000001" },
+    "_id": {
+      "$oid": "8b0000000000000000010001"
+    },
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    },
     "name": "System Monitor",
     "icon": "lucide:activity",
     "isHome": true,
-    "statusId": { "$oid": "700000000000000000140001" },
+    "statusId": {
+      "$oid": "700000000000000000140001"
+    },
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ],
-    "gridsterConfigId": { "$oid": "700000000000000000050004" },
+    "gridsterConfigId": {
+      "$oid": "700000000000000000050003"
+    },
     "tiles": [
       {
-        "windowId": { "$oid": "8b0000000000000000020001" },
-        "x": 0, "y": 0, "cols": 24, "rows": 3,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "6a2471e9644b16df299dfb24"
+        },
+        "x": 0,
+        "y": 0,
+        "cols": 18,
+        "rows": 4
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020005" },
-        "x": 0, "y": 3, "cols": 12, "rows": 6,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "6a2471e9644b16df299dfd42"
+        },
+        "x": 18,
+        "y": 0,
+        "cols": 6,
+        "rows": 4
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020006" },
-        "x": 12, "y": 3, "cols": 12, "rows": 6,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "8b0000000000000000020001"
+        },
+        "x": 0,
+        "y": 4,
+        "cols": 8,
+        "rows": 7
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020002" },
-        "x": 0, "y": 9, "cols": 14, "rows": 8,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "8b0000000000000000020003"
+        },
+        "x": 8,
+        "y": 4,
+        "cols": 16,
+        "rows": 7
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020008" },
-        "x": 14, "y": 9, "cols": 10, "rows": 8,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "6a2471e9644b16df299dfd5b"
+        },
+        "x": 0,
+        "y": 11,
+        "cols": 6,
+        "rows": 7
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020003" },
-        "x": 0, "y": 17, "cols": 14, "rows": 9,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "8b0000000000000000020007"
+        },
+        "x": 6,
+        "y": 11,
+        "cols": 10,
+        "rows": 7
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020007" },
-        "x": 14, "y": 17, "cols": 10, "rows": 9,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "6a2471eb644b16df299dfd6d"
+        },
+        "x": 16,
+        "y": 11,
+        "cols": 8,
+        "rows": 7
       },
       {
-        "windowId": { "$oid": "8b0000000000000000020004" },
-        "x": 0, "y": 26, "cols": 24, "rows": 4,
-        "slot": { "key": "", "title": "", "collapsedByDefault": false, "autoShowOnIntent": true, "icon": "", "render": { "prefabKey": "", "collection": "", "recordId": "" }, "accepts": [], "whenHidden": { "absorbedBy": [] } }
+        "windowId": {
+          "$oid": "8b0000000000000000020004"
+        },
+        "x": 0,
+        "y": 18,
+        "cols": 8,
+        "rows": 8
+      },
+      {
+        "windowId": {
+          "$oid": "8b0000000000000000020002"
+        },
+        "x": 8,
+        "y": 18,
+        "cols": 8,
+        "rows": 8
+      },
+      {
+        "windowId": {
+          "$oid": "8b0000000000000000020008"
+        },
+        "x": 16,
+        "y": 18,
+        "cols": 8,
+        "rows": 8
+      },
+      {
+        "windowId": {
+          "$oid": "6a2471ed644b16df299dfd99"
+        },
+        "x": 0,
+        "y": 26,
+        "cols": 12,
+        "rows": 6
+      },
+      {
+        "windowId": {
+          "$oid": "8b0000000000000000020006"
+        },
+        "x": 12,
+        "y": 26,
+        "cols": 12,
+        "rows": 6
+      },
+      {
+        "windowId": {
+          "$oid": "8b0000000000000000020005"
+        },
+        "x": 0,
+        "y": 32,
+        "cols": 24,
+        "rows": 6
       }
     ]
   }

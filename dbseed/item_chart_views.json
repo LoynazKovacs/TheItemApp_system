@@ -1,62 +1,454 @@
 [
   {
-    "_id": { "$oid": "8b0000000000000000110001" },
-    "modelId": { "$oid": "8b0000000000000000030005" },
+    "_id": {
+      "$oid": "6a2471d0644b16df299deea1"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "name": "Containers by state",
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "state"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "count",
+            "field": "_id",
+            "as": "count"
+          }
+        ]
+      }
+    },
+    "builder": {
+      "version": 1,
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "",
+        "limit": 200,
+        "aggregation": {
+          "rows": [
+            "state"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "count",
+              "field": "_id",
+              "as": "count"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": true
+      },
+      "chart": {
+        "type": "pie",
+        "showLegend": true,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": false,
+        "rotateXLabels": false,
+        "enableZoom": false,
+        "xKey": "state",
+        "yKeys": [
+          "count"
+        ],
+        "pieNameKey": "",
+        "pieValueKey": ""
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
+    },
+    "pinned": false,
+    "isDefault": false,
+    "order": 50,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471d3644b16df299deec3"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030006"
+    },
+    "name": "VRAM breakdown (bar)",
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "label"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "sum",
+            "field": "vramMB",
+            "as": "vramMB"
+          }
+        ]
+      }
+    },
+    "builder": {
+      "version": 1,
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "-vramMB",
+        "limit": 200,
+        "aggregation": {
+          "rows": [
+            "label"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "sum",
+              "field": "vramMB",
+              "as": "vramMB"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": true
+      },
+      "chart": {
+        "type": "bar",
+        "showLegend": false,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": false,
+        "rotateXLabels": true,
+        "enableZoom": false,
+        "xKey": "label",
+        "yKeys": [
+          "vramMB"
+        ]
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
+    },
+    "pinned": false,
+    "isDefault": false,
+    "order": 60,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000110001"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030005"
+    },
     "name": "GPU utilisation over time",
-    "data": { "kind": "aggregate", "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "gpuUtilPct", "as": "gpuUtilPct" }] } },
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "ts"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "max",
+            "field": "gpuUtilPct",
+            "as": "gpuUtilPct"
+          }
+        ]
+      }
+    },
     "builder": {
       "version": 1,
-      "data": { "kind": "aggregate", "query": [], "sort": "ts", "limit": 500, "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "gpuUtilPct", "as": "gpuUtilPct" }] } },
-      "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "area", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["gpuUtilPct"] },
-      "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "ts",
+        "limit": 500,
+        "aggregation": {
+          "rows": [
+            "ts"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "max",
+              "field": "gpuUtilPct",
+              "as": "gpuUtilPct"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": false
+      },
+      "chart": {
+        "type": "area",
+        "showLegend": false,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": true,
+        "rotateXLabels": true,
+        "enableZoom": true,
+        "xKey": "ts",
+        "yKeys": [
+          "gpuUtilPct"
+        ]
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
     },
-    "pinned": true, "isDefault": true, "order": 10,
-    "appId": { "$oid": "8b0000000000000000000001" }
+    "pinned": true,
+    "isDefault": true,
+    "order": 10,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000110002" },
-    "modelId": { "$oid": "8b0000000000000000030005" },
+    "_id": {
+      "$oid": "8b0000000000000000110002"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030005"
+    },
     "name": "VRAM used over time (MB)",
-    "data": { "kind": "aggregate", "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "vramUsedMB", "as": "vramUsedMB" }] } },
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "ts"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "max",
+            "field": "vramUsedMB",
+            "as": "vramUsedMB"
+          }
+        ]
+      }
+    },
     "builder": {
       "version": 1,
-      "data": { "kind": "aggregate", "query": [], "sort": "ts", "limit": 500, "aggregation": { "rows": ["ts"], "columns": [], "values": [{ "op": "max", "field": "vramUsedMB", "as": "vramUsedMB" }] } },
-      "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "area", "showLegend": false, "showTooltip": true, "stack": false, "smooth": true, "rotateXLabels": true, "enableZoom": true, "xKey": "ts", "yKeys": ["vramUsedMB"] },
-      "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "ts",
+        "limit": 500,
+        "aggregation": {
+          "rows": [
+            "ts"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "max",
+              "field": "vramUsedMB",
+              "as": "vramUsedMB"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": false
+      },
+      "chart": {
+        "type": "area",
+        "showLegend": false,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": true,
+        "rotateXLabels": true,
+        "enableZoom": true,
+        "xKey": "ts",
+        "yKeys": [
+          "vramUsedMB"
+        ]
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
     },
-    "pinned": true, "isDefault": true, "order": 20,
-    "appId": { "$oid": "8b0000000000000000000001" }
+    "pinned": true,
+    "isDefault": true,
+    "order": 20,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000110003" },
-    "modelId": { "$oid": "8b0000000000000000030002" },
+    "_id": {
+      "$oid": "8b0000000000000000110003"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
     "name": "Container RAM by stack (MB)",
-    "data": { "kind": "aggregate", "aggregation": { "rows": ["stack"], "columns": [], "values": [{ "op": "sum", "field": "memMB", "as": "memMB" }] } },
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "stack"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "sum",
+            "field": "memMB",
+            "as": "memMB"
+          }
+        ]
+      }
+    },
     "builder": {
       "version": 1,
-      "data": { "kind": "aggregate", "query": [], "sort": "", "limit": 200, "aggregation": { "rows": ["stack"], "columns": [], "values": [{ "op": "sum", "field": "memMB", "as": "memMB" }] } },
-      "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "bar", "showLegend": false, "showTooltip": true, "stack": false, "smooth": false, "rotateXLabels": true, "enableZoom": false, "xKey": "stack", "yKeys": ["memMB"] },
-      "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "",
+        "limit": 200,
+        "aggregation": {
+          "rows": [
+            "stack"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "sum",
+              "field": "memMB",
+              "as": "memMB"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": false
+      },
+      "chart": {
+        "type": "bar",
+        "showLegend": false,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": false,
+        "rotateXLabels": true,
+        "enableZoom": false,
+        "xKey": "stack",
+        "yKeys": [
+          "memMB"
+        ]
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
     },
-    "pinned": true, "isDefault": true, "order": 30,
-    "appId": { "$oid": "8b0000000000000000000001" }
+    "pinned": true,
+    "isDefault": true,
+    "order": 30,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
   },
   {
-    "_id": { "$oid": "8b0000000000000000110004" },
-    "modelId": { "$oid": "8b0000000000000000030006" },
+    "_id": {
+      "$oid": "8b0000000000000000110004"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030006"
+    },
     "name": "VRAM breakdown (of total)",
-    "data": { "kind": "aggregate", "aggregation": { "rows": ["label"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
+    "data": {
+      "kind": "aggregate",
+      "aggregation": {
+        "rows": [
+          "label"
+        ],
+        "columns": [],
+        "values": [
+          {
+            "op": "sum",
+            "field": "vramMB",
+            "as": "vramMB"
+          }
+        ]
+      }
+    },
     "builder": {
       "version": 1,
-      "data": { "kind": "aggregate", "query": [], "sort": "", "limit": 200, "aggregation": { "rows": ["label"], "columns": [], "values": [{ "op": "sum", "field": "vramMB", "as": "vramMB" }] } },
-      "mapping": { "datasetFields": [], "dropNulls": false },
-      "chart": { "type": "pie", "showLegend": true, "showTooltip": true, "stack": false, "smooth": false, "rotateXLabels": false, "enableZoom": false, "xKey": "label", "yKeys": ["vramMB"] },
-      "formatting": {}, "formatters": {}, "advanced": { "optionOverrides": {} }
+      "data": {
+        "kind": "aggregate",
+        "query": [],
+        "sort": "",
+        "limit": 200,
+        "aggregation": {
+          "rows": [
+            "label"
+          ],
+          "columns": [],
+          "values": [
+            {
+              "op": "sum",
+              "field": "vramMB",
+              "as": "vramMB"
+            }
+          ]
+        }
+      },
+      "mapping": {
+        "datasetFields": [],
+        "dropNulls": false
+      },
+      "chart": {
+        "type": "pie",
+        "showLegend": true,
+        "showTooltip": true,
+        "stack": false,
+        "smooth": false,
+        "rotateXLabels": false,
+        "enableZoom": false,
+        "xKey": "label",
+        "yKeys": [
+          "vramMB"
+        ]
+      },
+      "formatting": {},
+      "formatters": {},
+      "advanced": {
+        "optionOverrides": {}
+      }
     },
-    "pinned": true, "isDefault": true, "order": 40,
-    "appId": { "$oid": "8b0000000000000000000001" }
+    "pinned": true,
+    "isDefault": true,
+    "order": 40,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
   }
 ]

@@ -1,0 +1,136 @@
+[
+  {
+    "_id": {
+      "$oid": "6a2471be644b16df299de492"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030002"
+    },
+    "name": "Containers",
+    "groupBy": [],
+    "rowDensity": "comfortable",
+    "showAvatar": true,
+    "avatarField": "",
+    "avatarShape": "square",
+    "showTitle": true,
+    "titleField": "name",
+    "titleWeight": "bold",
+    "showSubtitle": true,
+    "subtitleField": "stack",
+    "subtitleLines": 1,
+    "showContent": true,
+    "contentField": "statusText",
+    "contentLines": 1,
+    "showRightTop": true,
+    "rightTopField": "cpuPercent",
+    "rightTopActionKeys": [],
+    "showRightMiddle": true,
+    "rightMiddleField": "memMB",
+    "rightMiddleKind": "badge",
+    "rightMiddleActionKeys": [],
+    "showRightBottom": true,
+    "rightBottomActionKeys": [
+      "system.system_containers.rowButton.stop",
+      "system.system_containers.rowButton.start",
+      "system.system_containers.rowButton.restart"
+    ],
+    "sortFields": [
+      {
+        "field": "memMB",
+        "dir": "desc"
+      }
+    ],
+    "isDefault": false,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471c1644b16df299de4c4"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030004"
+    },
+    "name": "GPU Services",
+    "groupBy": [],
+    "rowDensity": "comfortable",
+    "showAvatar": true,
+    "avatarField": "",
+    "avatarShape": "square",
+    "showTitle": true,
+    "titleField": "name",
+    "titleWeight": "bold",
+    "showBadge": true,
+    "badgeField": "enabled",
+    "showSubtitle": true,
+    "subtitleField": "url",
+    "subtitleLines": 1,
+    "showContent": true,
+    "contentField": "containerName",
+    "contentLines": 1,
+    "showRightTop": true,
+    "rightTopField": "kind",
+    "rightTopActionKeys": [],
+    "showRightMiddle": true,
+    "rightMiddleField": "vramEstimateMB",
+    "rightMiddleKind": "badge",
+    "rightMiddleActionKeys": [],
+    "rightBottomActionKeys": [],
+    "sortFields": [
+      {
+        "field": "order",
+        "dir": "asc"
+      }
+    ],
+    "isDefault": false,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a2471c3644b16df299de98d"
+    },
+    "modelId": {
+      "$oid": "8b0000000000000000030003"
+    },
+    "name": "GPU Workloads",
+    "groupBy": [],
+    "rowDensity": "comfortable",
+    "showAvatar": true,
+    "avatarField": "",
+    "avatarShape": "square",
+    "showTitle": true,
+    "titleField": "label",
+    "titleWeight": "bold",
+    "showSubtitle": true,
+    "subtitleField": "serviceName",
+    "subtitleLines": 1,
+    "showContent": true,
+    "contentField": "note",
+    "contentLines": 2,
+    "showRightTop": true,
+    "rightTopField": "vramMB",
+    "rightTopActionKeys": [],
+    "showRightMiddle": true,
+    "rightMiddleField": "status",
+    "rightMiddleKind": "badge",
+    "rightMiddleActionKeys": [],
+    "showRightBottom": true,
+    "rightBottomActionKeys": [
+      "system.system_gpu_workloads.rowButton.unload",
+      "system.system_gpu_workloads.rowButton.offload"
+    ],
+    "sortFields": [
+      {
+        "field": "vramMB",
+        "dir": "desc"
+      }
+    ],
+    "isDefault": false,
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    }
+  }
+]
