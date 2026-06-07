@@ -1,5 +1,10 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import {
+  startAppRegistration,
+  type AppManifest,
+  type RegistrationHandle,
+} from '@loynazkovacs/theitemapp-backend-sdk';
 import { getConfig } from './config.js';
 import { loadSeedRegistry } from './seedRegistry.js';
 import { CoreApiClient } from './coreApiClient.js';
@@ -46,40 +51,14 @@ async function main(): Promise<void> {
     return reply.send(data);
   });
 
-  const registerOnce = async (): Promise<boolean> => {
-    if (!appManifest) return false;
-    try {
-      const response = await fetch(`${config.coreApiUrl}/api/apps/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(config.appRegistrationKey ? { 'X-Registration-Key': config.appRegistrationKey } : {}),
-        },
-        body: JSON.stringify({ manifest: appManifest, baseUrl: config.registrationBaseUrl }),
-      });
-      if (!response.ok) {
-        app.log.warn({ status: response.status, body: (await response.text()).slice(0, 300) }, 'Registration failed');
-        return false;
-      }
-      const data = (await response.json()) as any;
-      app.log.info('Registered with core');
-      if (data.apiKey) {
-        coreApi.updateApiKey(data.apiKey);
-        app.log.info('Core API client updated with auto-provisioned API key');
-      } else {
-        app.log.warn('No apiKey returned from core registration');
-      }
-      return true;
-    } catch (error) {
-      app.log.warn({ error: String(error) }, 'Registration request failed');
-      return false;
-    }
-  };
+  // Registration lifecycle (register-with-retry, auto-provisioned API key
+  // capture, /app/re-register, heartbeat, deregister) is provided by the
+  // shared backend SDK. Assigned after `listen` below; the route closure reads
+  // it at call time.
+  let registration: RegistrationHandle | null = null;
 
   app.post('/app/re-register', async () => {
-    setImmediate(() => {
-      registerOnce().catch(() => {});
-    });
+    registration?.reRegister();
     return { ok: true, appKey: (appManifest?.appKey as string | undefined) ?? config.appKey };
   });
 
@@ -91,41 +70,40 @@ async function main(): Promise<void> {
 
   collector.start();
 
-  const heartbeatTimer = setInterval(() => {
-    if (!appManifest) return;
-    void registerOnce();
-  }, config.registrationHeartbeatMs);
+  if (appManifest) {
+    registration = startAppRegistration({
+      coreUrl: config.coreApiUrl,
+      manifest: appManifest as unknown as AppManifest,
+      selfUrl: config.registrationBaseUrl,
+      registrationKey: config.appRegistrationKey,
+      heartbeatMs: config.registrationHeartbeatMs,
+      // Keep our own signal handlers so the collector + Fastify shut down
+      // cleanly before we deregister.
+      installSignalHandlers: false,
+      onApiKey: (key) => {
+        coreApi.updateApiKey(key);
+        app.log.info('Core API client updated with auto-provisioned API key');
+      },
+      logger: {
+        info: (m) => app.log.info(m),
+        warn: (m) => app.log.warn(m),
+        error: (m) => app.log.error(m),
+      },
+    });
+  }
 
   let shuttingDown = false;
   const shutdown = async (): Promise<void> => {
     if (shuttingDown) return;
     shuttingDown = true;
     collector.stop();
-    clearInterval(heartbeatTimer);
-    try {
-      await fetch(`${config.coreApiUrl}/api/apps/register/${config.appKey}`, {
-        method: 'DELETE',
-        headers: { ...(config.appRegistrationKey ? { 'X-Registration-Key': config.appRegistrationKey } : {}) },
-      });
-    } catch {
-      /* best effort */
-    }
+    registration?.stop();
+    await registration?.deregister();
     await app.close();
     process.exit(0);
   };
   process.on('SIGINT', () => void shutdown());
   process.on('SIGTERM', () => void shutdown());
-
-  if (appManifest) {
-    void (async () => {
-      for (let attempt = 1; attempt <= 30; attempt += 1) {
-        if (await registerOnce()) return;
-        app.log.info({ attempt }, 'Core not ready, retrying registration');
-        await new Promise((r) => setTimeout(r, 5_000));
-      }
-      app.log.error('Failed to register with core after all retries');
-    })();
-  }
 }
 
 main().catch((error) => {
