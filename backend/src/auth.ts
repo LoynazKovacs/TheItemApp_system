@@ -1,4 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { verifyUser } from '@loynazkovacs/theitemapp-backend-sdk';
 
 export interface AuthContext {
   ok: boolean;
@@ -8,29 +9,21 @@ export interface AuthContext {
 
 /**
  * Verify the caller against core by forwarding their Authorization/Cookie to
- * `/api/auth/me`. Requests reach this backend through core's `/system-api`
- * proxy, which forwards the user's session, so the user's real identity and
- * group membership are available here.
+ * `/api/auth/me`, via the shared backend SDK's `verifyUser`. Requests reach
+ * this backend through core's `/system-api` proxy, which forwards the user's
+ * session, so the user's real identity and group membership are available here.
+ *
+ * Core being unreachable is treated as "not authenticated" (ok:false → 401),
+ * preserving this app's previous behaviour.
  */
 export async function verifyCaller(coreApiUrl: string, req: FastifyRequest): Promise<AuthContext> {
-  const authorization = (req.headers['authorization'] as string | undefined) ?? '';
-  const cookie = (req.headers['cookie'] as string | undefined) ?? '';
-  if (!authorization && !cookie) return { ok: false, userId: null, groupIds: [] };
   try {
-    const res = await fetch(`${coreApiUrl.replace(/\/$/, '')}/api/auth/me`, {
-      method: 'GET',
-      headers: {
-        ...(authorization ? { Authorization: authorization } : {}),
-        ...(cookie ? { Cookie: cookie } : {}),
-      },
+    const user = await verifyUser(coreApiUrl, {
+      cookie: req.headers['cookie'] as string | undefined,
+      authorization: req.headers['authorization'] as string | undefined,
     });
-    if (!res.ok) return { ok: false, userId: null, groupIds: [] };
-    const me = (await res.json()) as any;
-    const user = me?.user ?? me;
-    const groupIds = Array.isArray(user?.groupIds)
-      ? user.groupIds.map((g: any) => (typeof g === 'string' ? g : String(g?._id ?? ''))).filter(Boolean)
-      : [];
-    return { ok: true, userId: String(user?._id ?? '') || null, groupIds };
+    if (!user) return { ok: false, userId: null, groupIds: [] };
+    return { ok: true, userId: user._id, groupIds: user.groupIds };
   } catch {
     return { ok: false, userId: null, groupIds: [] };
   }
