@@ -42,7 +42,7 @@ export function getConfig(): AppConfig {
     dockerSocketPath: (process.env.DOCKER_SOCKET_PATH ?? '').trim() || '/var/run/docker.sock',
     pollIntervalMs: parseInt0(process.env.SYSTEM_POLL_INTERVAL_MS, 10_000),
     probeTimeoutMs: parseInt0(process.env.SYSTEM_PROBE_TIMEOUT_MS, 4_000),
-    adminGroupId: (process.env.SYSTEM_ADMIN_GROUP_ID ?? '').trim() || '7000000000000000001d0001',
+    adminGroupId: (process.env.SYSTEM_ADMIN_GROUP_ID ?? '').trim() || '8b0000000000000000040001',
     idleReaperSeconds: parseInt0(process.env.SYSTEM_IDLE_REAPER_SECONDS, 0),
     gpuSampleIntervalMs: parseInt0(process.env.SYSTEM_GPU_SAMPLE_INTERVAL_MS, 5_000),
     gpuSampleRetention: parseInt0(process.env.SYSTEM_GPU_SAMPLE_RETENTION, 180),

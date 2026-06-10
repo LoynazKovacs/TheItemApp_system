@@ -1,0 +1,44 @@
+[
+  {
+    "_id": {
+      "$oid": "8b0000000000000000040001"
+    },
+    "key": "system_admin",
+    "keyLower": "system_admin",
+    "name": "System Admin",
+    "description": "Full administrative access to System Monitor: manage GPU services configuration, stop/start/restart containers, and delete telemetry records.",
+    "permissions": [],
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    },
+    "systemManaged": true
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000040002"
+    },
+    "key": "system_operator",
+    "keyLower": "system_operator",
+    "name": "System Operator",
+    "description": "Operational access to System Monitor: write telemetry (telemetry collector), soft-unload GPU workloads, and manage GPU service configuration. Cannot delete records or perform hard container controls.",
+    "permissions": [],
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    },
+    "systemManaged": true
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000040003"
+    },
+    "key": "system_viewer",
+    "keyLower": "system_viewer",
+    "name": "System Viewer",
+    "description": "Read-only access to System Monitor: view host, container, and GPU telemetry. Cannot create, modify, or delete any records.",
+    "permissions": [],
+    "appId": {
+      "$oid": "8b0000000000000000000001"
+    },
+    "systemManaged": true
+  }
+]
