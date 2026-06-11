@@ -1,20 +1,8 @@
 [
   {
-    "_id": { "$oid": "8b0000000000000000040001" },
-    "key": "ollama",
-    "name": "Text Generator (Ollama)",
-    "kind": "ollama",
-    "url": "http://ollama:11434",
-    "containerName": "text-generator-ollama-1",
-    "enabled": true,
-    "order": 10,
-    "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
-    ]
-  },
-  {
-    "_id": { "$oid": "8b0000000000000000040002" },
+    "_id": {
+      "$oid": "8b0000000000000000040002"
+    },
     "key": "comfyui",
     "name": "Image Generator (ComfyUI)",
     "kind": "comfyui",
@@ -23,56 +11,60 @@
     "enabled": true,
     "order": 20,
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ]
   },
   {
-    "_id": { "$oid": "8b0000000000000000040003" },
-    "key": "omnivoice",
-    "name": "Voice (OmniVoice)",
-    "kind": "omnivoice",
-    "url": "http://omnivoice:3900",
-    "containerName": "voice-omnivoice-1",
-    "enabled": true,
-    "order": 30,
-    "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
-    ]
-  },
-  {
-    "_id": { "$oid": "8b0000000000000000040004" },
+    "_id": {
+      "$oid": "8b0000000000000000040004"
+    },
     "key": "km-embedder",
     "name": "Knowledge (bge-m3 embedder)",
     "kind": "container",
     "url": "http://km-embedder:80",
     "containerName": "knowledge-km-embedder-1",
-    "vramEstimateMB": 1900,
     "enabled": true,
     "order": 40,
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
-    ]
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "vramEstimateMB": 1900
   },
   {
-    "_id": { "$oid": "8b0000000000000000040005" },
+    "_id": {
+      "$oid": "8b0000000000000000040005"
+    },
     "key": "km-reranker",
     "name": "Knowledge (reranker)",
     "kind": "container",
     "url": "http://km-reranker:80",
     "containerName": "knowledge-km-reranker-1",
-    "vramEstimateMB": 2600,
     "enabled": true,
     "order": 50,
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
-    ]
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ],
+    "vramEstimateMB": 2600
   },
   {
-    "_id": { "$oid": "8b0000000000000000040006" },
+    "_id": {
+      "$oid": "8b0000000000000000040006"
+    },
     "key": "music-engine",
     "name": "Music (HeartMuLa)",
     "kind": "app-resources",
@@ -81,8 +73,52 @@
     "enabled": true,
     "order": 60,
     "groupIds": [
-      { "$oid": "7000000000000000001d0001" },
-      { "$oid": "7000000000000000001d0002" }
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000040001"
+    },
+    "key": "ollama",
+    "name": "Text Generator (Ollama)",
+    "kind": "ollama",
+    "url": "http://ollama:11434",
+    "containerName": "text-generator-ollama-1",
+    "enabled": true,
+    "order": 10,
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "8b0000000000000000040003"
+    },
+    "key": "omnivoice",
+    "name": "Voice (OmniVoice)",
+    "kind": "omnivoice",
+    "url": "http://omnivoice:3900",
+    "containerName": "voice-omnivoice-1",
+    "enabled": true,
+    "order": 30,
+    "groupIds": [
+      {
+        "$oid": "7000000000000000001d0001"
+      },
+      {
+        "$oid": "7000000000000000001d0002"
+      }
     ]
   }
 ]

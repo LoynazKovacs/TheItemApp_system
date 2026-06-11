@@ -14,7 +14,8 @@
         "key",
         "name",
         "description",
-        "permissions"
+        "permissions",
+        "appId"
       ]
     },
     {
@@ -22,7 +23,6 @@
       "file": "apps.json",
       "matchBy": "key",
       "installMode": "shared",
-      "exportFields": ["key", "name", "description", "icon", "enabled", "groupIds", "cantDelete"],
       "filter": { "key": "system" }
     },
     {
@@ -101,7 +101,7 @@
       "file": "data/system_gpu_services.json",
       "matchBy": "key",
       "installMode": "shared",
-      "exportFields": ["key", "name", "kind", "url", "containerName", "enabled", "order", "groupIds"]
+      "exportFields": ["key", "name", "kind", "url", "containerName", "enabled", "order", "groupIds", "vramEstimateMB"]
     }
   ],
   "routes": [
