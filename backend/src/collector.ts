@@ -259,16 +259,11 @@ export class Collector {
       groupIds: GROUPS,
     });
 
-    // Prune to the rolling retention window (oldest first).
-    const samples = await this.coreApi.list(COL_SAMPLES, this.config.gpuSampleRetention + 60);
-    const excess = samples.length - this.config.gpuSampleRetention;
-    if (excess > 0) {
-      const oldest = samples
-        .slice()
-        .sort((a, b) => Number(a.tsMs ?? 0) - Number(b.tsMs ?? 0))
-        .slice(0, excess);
-      for (const r of oldest) await this.coreApi.remove(COL_SAMPLES, r._id);
-    }
+    // Prune to the rolling retention window — one filtered hard-delete instead
+    // of listing the window and soft-deleting rows one by one (soft-deleted
+    // samples used to accumulate in mongo forever).
+    const cutoffMs = now.getTime() - this.config.gpuSampleRetention * this.config.gpuSampleIntervalMs;
+    await this.coreApi.removeByFilter(COL_SAMPLES, { tsMs: { $lt: cutoffMs } });
   }
 
   private async reconcileContainers(containers: Awaited<ReturnType<DockerClient['sampleContainers']>>): Promise<void> {

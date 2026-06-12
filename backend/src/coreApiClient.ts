@@ -58,7 +58,16 @@ export class CoreApiClient {
     await this.sdk.update<DynRow>(collection, id, { $set: patch });
   }
 
+  /**
+   * Telemetry rows are machine state (recreated every cycle) — hard-delete so
+   * they don't accumulate as soft-deleted residue in mongo forever.
+   */
   async remove(collection: string, id: string): Promise<void> {
-    await this.sdk.delete(collection, id);
+    await this.sdk.hardDeleteByFilter(collection, { _id: id });
+  }
+
+  async removeByFilter(collection: string, query: Record<string, unknown>): Promise<number> {
+    const res = await this.sdk.hardDeleteByFilter(collection, query);
+    return res.deletedCount;
   }
 }

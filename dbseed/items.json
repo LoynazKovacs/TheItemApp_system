@@ -235,7 +235,10 @@
       }
     },
     "tier": 3,
-    "kind": "data"
+    "kind": "data",
+    "behavior": {
+      "audit": false
+    }
   },
   {
     "_id": {
@@ -412,7 +415,10 @@
       }
     },
     "tier": 3,
-    "kind": "data"
+    "kind": "data",
+    "behavior": {
+      "audit": false
+    }
   },
   {
     "_id": {
@@ -784,7 +790,10 @@
       }
     },
     "tier": 3,
-    "kind": "data"
+    "kind": "data",
+    "behavior": {
+      "audit": false
+    }
   },
   {
     "_id": {
@@ -1025,7 +1034,10 @@
       }
     },
     "tier": 3,
-    "kind": "data"
+    "kind": "data",
+    "behavior": {
+      "audit": false
+    }
   },
   {
     "_id": {
@@ -1170,6 +1182,9 @@
       }
     },
     "tier": 3,
-    "kind": "data"
+    "kind": "data",
+    "behavior": {
+      "audit": false
+    }
   }
 ]
