@@ -1,7 +1,7 @@
 {
   "version": 2,
   "appKey": "system",
-  "appVersion": "1.5.1",
+  "appVersion": "1.5.2",
   "engineRequires": ">=1.0.0",
   "requiresCore": true,
   "collections": [
