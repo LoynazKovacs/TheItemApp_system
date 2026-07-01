@@ -27,6 +27,9 @@
     "appId": {
       "$oid": "8b0000000000000000000001"
     },
+    "behavior": {
+      "audit": false
+    },
     "schema": {
       "type": "object",
       "additionalProperties": false,
@@ -244,10 +247,7 @@
       }
     },
     "tier": 3,
-    "kind": "data",
-    "behavior": {
-      "audit": false
-    }
+    "kind": "data"
   },
   {
     "_id": {
@@ -271,6 +271,9 @@
     "icon": "lucide:activity",
     "appId": {
       "$oid": "8b0000000000000000000001"
+    },
+    "behavior": {
+      "audit": false
     },
     "schema": {
       "type": "object",
@@ -433,10 +436,7 @@
       }
     },
     "tier": 3,
-    "kind": "data",
-    "behavior": {
-      "audit": false
-    }
+    "kind": "data"
   },
   {
     "_id": {
@@ -630,6 +630,9 @@
     "icon": "lucide:cpu",
     "appId": {
       "$oid": "8b0000000000000000000001"
+    },
+    "behavior": {
+      "audit": false
     },
     "schema": {
       "type": "object",
@@ -826,10 +829,7 @@
       }
     },
     "tier": 3,
-    "kind": "data",
-    "behavior": {
-      "audit": false
-    }
+    "kind": "data"
   },
   {
     "_id": {
@@ -853,6 +853,9 @@
     "icon": "lucide:server",
     "appId": {
       "$oid": "8b0000000000000000000001"
+    },
+    "behavior": {
+      "audit": false
     },
     "schema": {
       "type": "object",
@@ -1079,10 +1082,7 @@
       }
     },
     "tier": 3,
-    "kind": "data",
-    "behavior": {
-      "audit": false
-    }
+    "kind": "data"
   },
   {
     "_id": {
@@ -1106,6 +1106,9 @@
     "icon": "lucide:chart-pie",
     "appId": {
       "$oid": "8b0000000000000000000001"
+    },
+    "behavior": {
+      "audit": false
     },
     "schema": {
       "type": "object",
@@ -1236,9 +1239,6 @@
       }
     },
     "tier": 3,
-    "kind": "data",
-    "behavior": {
-      "audit": false
-    }
+    "kind": "data"
   }
 ]

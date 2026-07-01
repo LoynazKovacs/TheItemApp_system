@@ -1,7 +1,7 @@
 {
   "version": 2,
   "appKey": "system",
-  "appVersion": "1.5.3",
+  "appVersion": "1.5.4",
   "engineRequires": ">=1.0.0",
   "requiresCore": true,
   "collections": [
@@ -81,7 +81,7 @@
     {
       "collection": "actions",
       "file": "actions.json",
-      "matchBy": "key",
+      "matchBy": "_id",
       "installMode": "shared",
       "exportFields": [
         "key", "modelId", "type", "kind", "label", "tooltip", "description", "icon",
